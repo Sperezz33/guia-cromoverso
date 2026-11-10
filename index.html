@@ -1,0 +1,1841 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Guía de estudio del proyecto Cromoverso (Sprint 1): Next.js, React, TypeScript, API, accesibilidad, Git, Emmet y Git Bash.">
+<title>Guía de estudio Cromoverso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Rubik:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: índice fijo a la izquierda (columna de 270px) + columna de lectura de ~760px. En móvil el índice se pliega arriba. Paleta tomada del sistema de diseño de Cromoverso. */
+:root {
+  --fondo: #fff8ec;
+  --superficie: #ffffff;
+  --superficie-2: #f6efff;
+  --tinta: #1a1033;
+  --tinta-suave: #5a4f73;
+  --borde: #e7dccb;
+  --marca: #6c3bff;
+  --marca-suave: #ede6ff;
+  --acento: #ffd23f;
+  --acento-suave: #fff1c2;
+  --verde: #0e7c66;
+  --verde-suave: #dcf4ee;
+  --rojo: #b42318;
+  --rojo-suave: #fde4e1;
+  --codigo-fondo: #1a1033;
+  --codigo-tinta: #efe9ff;
+  --codigo-comentario: #a99bd0;
+  --f-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-cuerpo: "Rubik", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #120b24; --superficie: #1b1333; --superficie-2: #231944; --tinta: #f2edff; --tinta-suave: #b9aed6;
+    --borde: #33285a; --marca: #a88bff; --marca-suave: #2a1f55; --acento: #ffd23f; --acento-suave: #3a3013;
+    --verde: #5fd3b6; --verde-suave: #10332c; --rojo: #ff8a80; --rojo-suave: #3b1714;
+    --codigo-fondo: #0b0618; --codigo-tinta: #efe9ff; --codigo-comentario: #9a8cc4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fondo: #120b24; --superficie: #1b1333; --superficie-2: #231944; --tinta: #f2edff; --tinta-suave: #b9aed6;
+  --borde: #33285a; --marca: #a88bff; --marca-suave: #2a1f55; --acento: #ffd23f; --acento-suave: #3a3013;
+  --verde: #5fd3b6; --verde-suave: #10332c; --rojo: #ff8a80; --rojo-suave: #3b1714;
+  --codigo-fondo: #0b0618; --codigo-tinta: #efe9ff; --codigo-comentario: #9a8cc4; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--fondo); color: var(--tinta); font-family: var(--f-cuerpo); font-size: 17px; line-height: 1.65; }
+.pagina { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 48px; max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 96px; }
+aside.indice { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; font-size: 14px; line-height: 1.4; padding-right: 8px; }
+.indice .logo { font-family: var(--f-display); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; color: var(--marca); margin: 0 0 4px; }
+.indice .sub { color: var(--tinta-suave); margin: 0 0 16px; font-size: 13px; }
+.indice input[type="search"] { width: 100%; font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--borde); background: var(--superficie); color: var(--tinta); margin-bottom: 12px; }
+.progreso { font-size: 13px; color: var(--tinta-suave); margin-bottom: 12px; }
+.progreso .barra { height: 6px; background: var(--borde); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+.progreso .barra span { display: block; height: 100%; width: 0; background: var(--marca); transition: width .3s; }
+.indice h4 { font-family: var(--f-cuerpo); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--tinta-suave); margin: 18px 0 6px; font-weight: 600; }
+.indice ol { list-style: none; margin: 0; padding: 0; }
+.indice a { display: flex; gap: 8px; align-items: baseline; padding: 4px 8px; border-radius: 8px; color: var(--tinta); text-decoration: none; }
+.indice a:hover { background: var(--marca-suave); }
+.indice a.hecho::after { content: "✓"; margin-left: auto; color: var(--verde); font-weight: 600; }
+.indice a.activo { background: var(--marca-suave); color: var(--marca); font-weight: 500; }
+details.indice-movil { display: none; }
+main { min-width: 0; max-width: 780px; }
+.portada { padding: 8px 0 32px; border-bottom: 2px solid var(--tinta); margin-bottom: 40px; }
+.portada .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--marca); font-weight: 600; }
+.portada h1 { font-family: var(--f-display); font-size: clamp(30px, 5vw, 48px); line-height: 1.08; letter-spacing: -0.02em; margin: 8px 0 16px; text-wrap: balance; }
+.portada p { font-size: 19px; color: var(--tinta-suave); margin: 0; max-width: 62ch; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.parte { font-family: var(--f-display); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-suave); margin: 72px 0 0; padding-top: 16px; border-top: 1px dashed var(--borde); }
+section { scroll-margin-top: 16px; }
+section > h2 { font-family: var(--f-display); font-size: clamp(22px, 3.2vw, 30px); line-height: 1.2; letter-spacing: -0.015em; margin: 28px 0 12px; text-wrap: balance; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+section > h2 .num { font-size: .6em; color: var(--marca); font-weight: 500; }
+h3 { font-family: var(--f-cuerpo); font-size: 19px; font-weight: 600; margin: 28px 0 8px; }
+p, li { max-width: 68ch; }
+a { color: var(--marca); }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--superficie-2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+pre { background: var(--codigo-fondo); color: var(--codigo-tinta); padding: 16px 18px; border-radius: 12px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; margin: 12px 0 16px; }
+pre code { background: none; padding: 0; font-size: inherit; color: inherit; overflow-wrap: normal; }
+pre .c { color: var(--codigo-comentario); font-style: italic; }
+pre .k { color: #ffd23f; }
+.caja { border-radius: 14px; padding: 14px 18px; margin: 16px 0; border: 1px solid var(--borde); background: var(--superficie); }
+.caja > :first-child { margin-top: 0; } .caja > :last-child { margin-bottom: 0; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 2px 10px; border-radius: 99px; margin-bottom: 6px; }
+.concepto { background: var(--superficie); }
+.concepto .chip, .chip.concepto-c { background: var(--marca-suave); color: var(--marca); }
+.analogia { background: var(--acento-suave); border-color: transparent; }
+.analogia .chip, .chip.analogia-c { background: var(--acento); color: #1a1033; }
+.proyecto { background: var(--superficie-2); border-color: transparent; }
+.proyecto .chip, .chip.proyecto-c { background: var(--marca); color: #fff; }
+.taquilla { background: var(--verde-suave); border-color: transparent; }
+.taquilla .chip, .chip.taquilla-c { background: var(--verde); color: var(--superficie); }
+.ojo { background: var(--rojo-suave); border-color: transparent; }
+.ojo .chip, .chip.ojo-c { background: var(--rojo); color: var(--superficie); }
+.tabla { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--borde); border-radius: 12px; background: var(--superficie); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+th { font-weight: 600; background: var(--superficie-2); font-size: 13px; letter-spacing: .02em; }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+details.pregunta { border: 1px solid var(--borde); border-radius: 12px; background: var(--superficie); margin: 10px 0; }
+details.pregunta summary { cursor: pointer; padding: 12px 16px; font-weight: 500; list-style: none; display: flex; gap: 10px; }
+details.pregunta summary::before { content: "+"; font-family: var(--f-mono); color: var(--marca); font-weight: 600; }
+details.pregunta[open] summary::before { content: "−"; }
+details.pregunta .resp { padding: 0 16px 14px 36px; }
+details.pregunta .resp > :first-child { margin-top: 0; }
+.marcar { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; color: var(--tinta-suave); margin-top: 20px; cursor: pointer; user-select: none; }
+.marcar input { width: 18px; height: 18px; accent-color: var(--marca); }
+.diagrama { overflow-x: auto; margin: 16px 0; }
+.flujo { display: grid; gap: 10px; counter-reset: paso; }
+.flujo li { list-style: none; position: relative; padding: 10px 14px 10px 48px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 12px; counter-increment: paso; }
+.flujo li::before { content: counter(paso); position: absolute; left: 12px; top: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--marca); color: #fff; font-size: 13px; font-weight: 600; display: grid; place-items: center; }
+ol.flujo { padding: 0; }
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dos > * { min-width: 0; }
+kbd { font-family: var(--f-mono); font-size: .82em; border: 1px solid var(--borde); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--superficie); }
+:focus-visible { outline: 3px solid var(--marca); outline-offset: 2px; }
+.oculto { display: none !important; }
+@media (max-width: 960px) {
+  .pagina { grid-template-columns: minmax(0, 1fr); gap: 0; padding-block: 16px 72px; }
+  aside.indice { display: none; }
+  details.indice-movil { display: block; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--fondo); border: 1px solid var(--borde); border-radius: 12px; margin-bottom: 20px; font-size: 15px; }
+  details.indice-movil summary { padding: 10px 14px; cursor: pointer; font-weight: 600; }
+  details.indice-movil .lista { max-height: 60vh; overflow-y: auto; padding: 0 10px 12px; }
+  details.indice-movil a { display: block; padding: 6px 8px; color: var(--tinta); text-decoration: none; border-radius: 8px; }
+  .dos { grid-template-columns: minmax(0, 1fr); }
+  body { font-size: 16px; }
+}
+
+body { margin: 0; }
+</style>
+</head>
+<body>
+
+
+<div class="pagina">
+<aside class="indice" aria-label="Índice de la guía">
+  <p class="logo">Cromoverso</p>
+  <p class="sub">Guía de estudio para la sustentación del Sprint 1</p>
+  <label for="buscar" class="oculto">Buscar sección</label>
+  <input type="search" id="buscar" placeholder="Buscar tema (ej. cookies)">
+  <div class="progreso" id="progreso">0 de 0 secciones estudiadas<div class="barra"><span></span></div></div>
+  <nav id="nav-indice"></nav>
+</aside>
+
+<main>
+<details class="indice-movil"><summary>Índice de la guía</summary><div class="lista" id="nav-movil"></div></details>
+
+<header class="portada">
+  <div class="eyebrow">Sprint 1 · Next.js + TypeScript · Sustentación</div>
+  <h1>Cromoverso de cero a sustentación</h1>
+  <p>Todo lo que hay en el proyecto, explicado desde lo básico. Cada tema va en el mismo orden: el concepto, una analogía, cómo está en Cromoverso y cómo se vería en Taquilla, el proyecto de tu compañero.</p>
+  <div class="leyenda">
+    <span class="chip concepto-c">Concepto</span>
+    <span class="chip analogia-c">Analogía</span>
+    <span class="chip proyecto-c">En Cromoverso</span>
+    <span class="chip taquilla-c">En Taquilla</span>
+    <span class="chip ojo-c">Ojo / trampa</span>
+  </div>
+</header>
+
+<div class="parte" data-parte="Inicio">Inicio</div>
+
+<section id="s-uso" data-titulo="Cómo usar esta guía">
+<h2>Cómo usar esta guía</h2>
+<p>La guía está pensada para leerse en orden la primera vez. Las partes 1 a 3 son las bases (web, React y Next.js). La parte 4 explica la API. La parte 5 recorre las seis historias del sprint una por una. Las partes 6 a 8 cubren lo transversal (accesibilidad, Git, despliegue) y la preparación de la sustentación. La parte 9 son las guías de Emmet y Git Bash.</p>
+<p>Al final de cada sección hay una casilla «Ya lo estudié». Se guarda en este navegador y llena la barra de progreso del índice. El buscador del índice filtra las secciones por título.</p>
+<div class="caja ojo"><span class="chip">Antes de la sustentación</span>
+<p>No fusiones nada en <code>main</code> ni cambies la configuración de Vercel hasta después de la sustentación: cada fusión en <code>main</code> dispara un despliegue nuevo, y el bot de la profesora revisa la página cada 2 horas. Tampoco llames a las rutas <code>/docente</code> de la API: son solo de la profesora.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-uso"> Ya lo estudié</label>
+</section>
+
+<section id="s-mapa" data-titulo="El proyecto en una página">
+<h2>El proyecto en una página</h2>
+<p><strong>Cromoverso</strong> es el frontend (la parte que ve la persona) de un álbum de cromos de héroes. Los datos (mundos, cromos, rarezas, textos de la interfaz) no están en el proyecto: viven en una API que hizo la profesora, en <code>https://yanethm-cromoverso-api.fly.dev/api/v1</code>. El frontend los pide, los organiza y los pinta según el diseño de Figma.</p>
+<div class="tabla"><table>
+<tr><th>Dato</th><th>Valor</th></tr>
+<tr><td>Sitio desplegado</td><td><code>https://cromoverso-sperezz33.vercel.app</code></td></tr>
+<tr><td>Repositorio</td><td><code>https://github.com/Sperezz33/Cromoverso</code></td></tr>
+<tr><td>API</td><td><code>https://yanethm-cromoverso-api.fly.dev/api/v1</code> (contrato en <code>/docs/contrato</code>)</td></tr>
+<tr><td>Tecnologías</td><td>Next.js 16 (App Router), React 19, TypeScript estricto, CSS Modules, ESLint, Prettier</td></tr>
+<tr><td>Hospedaje</td><td>Vercel (frontend) · Fly.io (API, de la profesora)</td></tr>
+<tr><td>Monitoreo</td><td>UptimeRobot, monitor HTTP cada 5 minutos</td></tr>
+<tr><td>Vistas del sprint</td><td>Inicio (<code>/</code>) y catálogo de un mundo (<code>/mundos/[id]</code>). Además <code>/ingresar</code> y <code>/registro</code> solo con su presentación (los formularios son de los sprints 2 y 3)</td></tr>
+</table></div>
+<h3>Qué pasa cuando alguien abre la página</h3>
+<ol class="flujo">
+<li>El navegador pide <code>cromoverso-sperezz33.vercel.app/mundos/neon</code> a Vercel.</li>
+<li>En el servidor de Vercel, Next.js ejecuta <code>layout.tsx</code>: lee las cookies <code>consentimiento</code> e <code>idioma</code>, decide el idioma y pide los textos a <code>GET /textos?idioma=es</code>.</li>
+<li>Después ejecuta <code>mundos/[id]/page.tsx</code>: pide en paralelo el mundo, la lista de mundos y las rarezas. Si hay <code>?rareza=</code> o <code>?tipo=</code> en la URL, pide los cromos filtrados.</li>
+<li>Next.js arma el HTML completo y lo envía. La persona ve la página de una vez, ya en su idioma y sin parpadeo del aviso de cookies.</li>
+<li>En el navegador, React «hidrata» los componentes interactivos (menú móvil, selector de idioma, aviso de cookies, filtros en móvil) para que respondan a clics y teclado.</li>
+<li>Si cambia el idioma, una Server Action pide los textos nuevos, el contexto los reparte a todos los componentes y, si aceptó cookies, se guarda la cookie <code>idioma</code>.</li>
+</ol>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Piensa en un restaurante. La API es la bodega con los ingredientes (datos). Next.js en el servidor es la cocina: toma los ingredientes y arma el plato (HTML). El navegador es la mesa donde se sirve. React en el navegador es el mesero que sigue atendiendo después de servir: si pides otra cosa (cambiar de idioma), va a la cocina y vuelve sin que tengas que pararte de la mesa.</p></div>
+<h3>Las seis historias del sprint</h3>
+<div class="tabla"><table>
+<tr><th>Historia</th><th>Qué pide</th><th>PR</th></tr>
+<tr><td>US-CRO-S1-01</td><td>Configurar el proyecto y el sistema de diseño (tokens, iconos, componentes base)</td><td>#3</td></tr>
+<tr><td>US-CRO-S1-02</td><td>Navegar por el sitio en web y móvil (encabezado, menú móvil, pie, estados)</td><td>#4</td></tr>
+<tr><td>US-CRO-S1-05</td><td>Cambiar el idioma entre español e inglés</td><td>#5</td></tr>
+<tr><td>US-CRO-S1-06</td><td>Aceptar o rechazar las cookies</td><td>#6</td></tr>
+<tr><td>US-CRO-S1-03</td><td>Inicio público</td><td>#7</td></tr>
+<tr><td>US-CRO-S1-04</td><td>Catálogo de un mundo</td><td>#8</td></tr>
+</table></div>
+<p>Después vinieron el PR #9 (integración en <code>main</code>), #10 (resiliencia ante fallas de la API), #11 (IA.md y README) y #12 (respuesta equivocada de la IA en IA.md). El orden 01 → 02 → 05 → 06 → 03 → 04 tiene una razón: idioma y cookies se necesitan en todas las vistas, así que se hicieron antes que las vistas.</p>
+<h3>Cómo se calificará (rúbrica)</h3>
+<div class="tabla"><table>
+<tr><th>Criterio</th><th>Peso</th><th>Dónde está en esta guía</th></tr>
+<tr><td>Sistema de diseño</td><td>25 %</td><td>S1-01, CSS, tokens</td></tr>
+<tr><td>Vistas 1 y 2 con datos de la API</td><td>25 %</td><td>S1-03, S1-04, la API</td></tr>
+<tr><td>Idioma y cookies</td><td>20 %</td><td>S1-05, S1-06</td></tr>
+<tr><td>Adaptable y accesible</td><td>20 %</td><td>Accesibilidad, diseño adaptable, S1-02</td></tr>
+<tr><td>Herramientas (Git, despliegue, IA)</td><td>10 %</td><td>Parte 7</td></tr>
+</table></div>
+<label class="marcar"><input type="checkbox" data-marca="s-mapa"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 1 · Fundamentos de la web</div>
+
+<section id="s-web" data-titulo="Cliente, servidor y HTTP">
+<h2><span class="num">1.1</span> Cliente, servidor y HTTP</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>La web funciona con <strong>peticiones y respuestas</strong>. Un <strong>cliente</strong> (el navegador, o un programa) envía una <strong>petición</strong> a un <strong>servidor</strong>, y el servidor contesta con una <strong>respuesta</strong>. El idioma en que hablan se llama <strong>HTTP</strong> (HTTPS es la versión cifrada).</p>
+<p>Una petición tiene:</p>
+<ul>
+<li><strong>Método</strong>: qué quieres hacer. <code>GET</code> = leer, <code>POST</code> = crear, <code>PUT</code>/<code>PATCH</code> = modificar, <code>DELETE</code> = borrar.</li>
+<li><strong>URL</strong>: a quién y qué. Por ejemplo <code>https://yanethm-cromoverso-api.fly.dev/api/v1/cromos?rareza=dorada&amp;tipo=heroe</code>. Lo que va después de <code>?</code> es la <strong>cadena de consulta</strong> (query string): pares <code>clave=valor</code> unidos con <code>&amp;</code>.</li>
+<li><strong>Cabeceras</strong> (headers): datos extra. Ej.: <code>Accept: application/json</code> («respóndeme en JSON»), <code>Cookie: idioma=en</code>.</li>
+<li><strong>Cuerpo</strong> (body): datos que envías, solo en POST/PUT/PATCH.</li>
+</ul>
+<p>Una respuesta tiene un <strong>código de estado</strong>, cabeceras y un cuerpo.</p></div>
+<div class="tabla"><table>
+<tr><th>Código</th><th>Significa</th><th>Ejemplo en Cromoverso</th></tr>
+<tr><td>200 OK</td><td>Todo bien</td><td><code>GET /mundos</code> devuelve los 6 mundos</td></tr>
+<tr><td>204 No Content</td><td>Bien, pero sin cuerpo</td><td>(Taquilla: <code>DELETE /sesion</code>)</td></tr>
+<tr><td>400 Bad Request</td><td>Pediste algo mal formado</td><td><code>GET /textos?idioma=fr</code> → <code>idioma_no_soportado</code></td></tr>
+<tr><td>401 Unauthorized</td><td>No has iniciado sesión</td><td>(sprints siguientes)</td></tr>
+<tr><td>404 Not Found</td><td>No existe</td><td><code>GET /mundos/no-existe</code> → la página de no encontrado</td></tr>
+<tr><td>422 Unprocessable</td><td>Entendí, pero el dato no es válido</td><td><code>GET /cromos?rareza=inventada</code></td></tr>
+<tr><td>5xx</td><td>Falló el servidor</td><td>503 simulado con <code>X-Simular-Error</code></td></tr>
+</table></div>
+<p>Regla fácil: <strong>2xx</strong> éxito, <strong>4xx</strong> el error es de quien pide (no vale la pena repetir igual), <strong>5xx</strong> el error es del servidor (puede ser pasajero, vale la pena reintentar). Esta regla es justo la que usa el proyecto para decidir cuándo reintentar.</p>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>HTTP es como pedir en una ventanilla. El método es el tipo de trámite, la URL es la ventanilla y el formulario, las cabeceras son las notas al margen («respóndame por escrito»), y el código de estado es el sello que te ponen: aprobado (200), no existe ese trámite (404), formulario mal lleno (422), o «el sistema se cayó, vuelva en un rato» (503).</p></div>
+<h3>JSON</h3>
+<p>JSON es el formato de texto en que la API envía los datos. Se parece a los objetos de JavaScript: llaves <code>{}</code> para objetos, corchetes <code>[]</code> para listas, y las claves siempre entre comillas dobles.</p>
+<pre><code>{
+  "datos": [
+    { "id": "neon", "nombre": "…", "numeros": { "desde": 1, "hasta": 20 }, "totalCromos": 20 }
+  ]
+}</code></pre>
+<h3>Cookies</h3>
+<p>Una <strong>cookie</strong> es un dato pequeño (nombre=valor) que el navegador guarda para un sitio y <strong>envía automáticamente en cada petición a ese sitio</strong>. Por eso el servidor de Next.js puede saber el idioma elegido antes de armar la página. Cada cookie tiene opciones: cuánto dura (<code>Max-Age</code>), para qué rutas vale (<code>Path</code>), si solo viaja por HTTPS (<code>Secure</code>), si la puede leer JavaScript (<code>HttpOnly</code> la oculta) y cuándo se envía desde otros sitios (<code>SameSite</code>).</p>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>El servidor de Next.js (en Vercel) es cliente de la API: todas las peticiones a la API las hace el servidor, no el navegador. El navegador solo habla con Vercel. Esto tiene ventajas: la dirección de la API queda en una variable de entorno, se puede usar caché, y no hay problemas de CORS (permisos entre dominios distintos).</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Es exactamente igual: la API de Taquilla vive en <code>https://yanethm-taquilla-api.fly.dev/api/v1</code>, responde JSON y usa los mismos códigos. Su contrato también tiene <code>404 no_encontrado</code> (un evento que no existe), <code>400 idioma_no_soportado</code> y <code>422 validacion</code>. Además tiene <code>401</code>, <code>409</code> y <code>429</code>, porque Taquilla ya tiene inicio de sesión y registro en su API.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-web"> Ya lo estudié</label>
+</section>
+
+<section id="s-html" data-titulo="HTML semántico">
+<h2><span class="num">1.2</span> HTML semántico</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>HTML describe la <strong>estructura y el significado</strong> del contenido. «Semántico» quiere decir usar la etiqueta que <em>dice qué es</em> cada cosa, no solo cómo se ve. Un <code>&lt;div&gt;</code> no significa nada; un <code>&lt;nav&gt;</code> significa «esto es navegación». Los lectores de pantalla (programas que leen la página en voz alta a personas ciegas), los buscadores y el teclado usan ese significado.</p></div>
+<div class="tabla"><table>
+<tr><th>Etiqueta</th><th>Significa</th><th>Dónde está en Cromoverso</th></tr>
+<tr><td><code>&lt;header&gt;</code></td><td>Encabezado del sitio</td><td><code>Encabezado.tsx</code></td></tr>
+<tr><td><code>&lt;nav&gt;</code></td><td>Grupo de enlaces de navegación</td><td>Encabezado, menú móvil, pie, panel «Mundos» del catálogo</td></tr>
+<tr><td><code>&lt;main&gt;</code></td><td>Contenido principal (uno por página)</td><td><code>layout.tsx</code>, con <code>id="contenido"</code></td></tr>
+<tr><td><code>&lt;section&gt;</code></td><td>Sección temática con título</td><td>Portada y mundos del inicio, aviso de cookies</td></tr>
+<tr><td><code>&lt;aside&gt;</code></td><td>Contenido complementario</td><td>Columna de filtros del catálogo</td></tr>
+<tr><td><code>&lt;footer&gt;</code></td><td>Pie de página</td><td><code>Pie.tsx</code></td></tr>
+<tr><td><code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code></td><td>Títulos en jerarquía</td><td>Un solo <code>h1</code> por vista, luego <code>h2</code>, <code>h3</code> sin saltarse niveles</td></tr>
+<tr><td><code>&lt;button&gt;</code> vs <code>&lt;a&gt;</code></td><td>Botón = acción. Enlace = ir a otro lugar</td><td>«Aceptar» es botón; «Ver Ciudad Neón» es enlace</td></tr>
+<tr><td><code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code></td><td>Lista</td><td>Enlaces del menú, rejilla de cromos</td></tr>
+</table></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Un libro tiene portada, índice, capítulos y contraportada. Si todo fuera «hojas» sin títulos, nadie encontraría nada. Las etiquetas semánticas son esos títulos de capítulo: una persona ciega con lector de pantalla puede «saltar al índice» (<code>nav</code>) o «ir al capítulo» (<code>main</code>) igual que tú pasas páginas con el dedo.</p></div>
+<h3>Atributos que importan</h3>
+<ul>
+<li><code>lang</code> en <code>&lt;html lang="es"&gt;</code>: dice el idioma de la página para que el lector de pantalla pronuncie bien. El proyecto lo cambia a <code>en</code> cuando eliges inglés.</li>
+<li><code>id</code>: nombre único de un elemento. <code>#contenido</code> es el destino del enlace «Saltar al contenido».</li>
+<li><code>alt</code> en imágenes, <code>aria-*</code> para accesibilidad (ver la sección de accesibilidad), <code>hidden</code> para ocultar del todo.</li>
+</ul>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>El esqueleto que arma <code>src/app/layout.tsx</code> para todas las vistas:</p>
+<pre><code>&lt;html lang={idioma}&gt;
+  &lt;body&gt;
+    &lt;SaltarAlContenido /&gt;   <span class="c">{/* enlace oculto hasta recibir foco */}</span>
+    &lt;GestorCookies /&gt;       <span class="c">{/* aviso, solo si no ha decidido */}</span>
+    &lt;Encabezado /&gt;          <span class="c">{/* &lt;header&gt; con &lt;nav&gt; */}</span>
+    &lt;main id="contenido" tabIndex={-1}&gt;{children}&lt;/main&gt;
+    &lt;Pie /&gt;                 <span class="c">{/* &lt;footer&gt; */}</span>
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>El mismo esqueleto sirve: <code>header</code> con la navegación (Inicio, Explorar), <code>main</code> con la vista y <code>footer</code>. En el detalle de un evento, el título del evento sería el <code>h1</code>, y «Funciones» y «Localidades» serían <code>h2</code>. La lista de eventos en Explorar sería una <code>&lt;ul&gt;</code> de tarjetas.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-html"> Ya lo estudié</label>
+</section>
+
+<section id="s-css" data-titulo="CSS: cascada, variables y layout">
+<h2><span class="num">1.3</span> CSS: cascada, variables y layout</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>CSS define cómo se ve el HTML. Una regla tiene un <strong>selector</strong> (a qué elementos aplica) y <strong>declaraciones</strong> (<code>propiedad: valor</code>).</p>
+<pre><code>.boton { background: var(--marca-primario); padding: var(--espacio-3); }</code></pre>
+<p>«Cascada» significa que cuando varias reglas tocan el mismo elemento gana la más específica (un <code>#id</code> pesa más que una <code>.clase</code>, que pesa más que una etiqueta) y, si empatan, la que va de última.</p></div>
+<h3>Variables CSS (custom properties)</h3>
+<p>Una variable CSS se declara con dos guiones y se usa con <code>var()</code>. Si se declara en <code>:root</code> (la raíz del documento, o sea <code>&lt;html&gt;</code>), está disponible en toda la página.</p>
+<pre><code>:root { --marca-primario: #6c3bff; }
+.boton { background: var(--marca-primario); }</code></pre>
+<p>También se pueden declarar en un elemento y solo valen ahí y en sus hijos. El componente <code>Icono</code> usa eso: le pone a cada icono su propia variable <code>--icono</code> con la URL del SVG.</p>
+<h3>Unidades y valores que verás</h3>
+<ul>
+<li><code>px</code> píxeles; <code>rem</code> relativo al tamaño de letra raíz; <code>%</code> relativo al padre; <code>vw</code>/<code>vh</code> porcentaje de la ventana; <code>fr</code> fracción del espacio libre en una rejilla.</li>
+<li>Atajos (shorthand): <code>font: var(--tipo-cuerpo-m)</code> pone de una vez el peso, el tamaño, el interlineado y la familia. El proyecto lo usa para no escribir tamaños de letra a mano.</li>
+<li><code>currentColor</code>: «el color del texto actual». Los iconos lo usan para tomar el color del texto que los rodea.</li>
+</ul>
+<h3>Flexbox y Grid</h3>
+<div class="dos">
+<div class="caja"><strong>Flexbox</strong> ordena elementos en <strong>una dimensión</strong> (fila o columna). Ideal para barras: logo a la izquierda, enlaces al centro, botones a la derecha.
+<pre><code>.barra { display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espacio-4); }</code></pre></div>
+<div class="caja"><strong>Grid</strong> ordena en <strong>dos dimensiones</strong> (filas y columnas). Ideal para rejillas de tarjetas.
+<pre><code>.rejilla { display: grid;
+  grid-template-columns:
+    repeat(5, 1fr);
+  gap: var(--espacio-4); }</code></pre></div>
+</div>
+<h3>Media queries (diseño adaptable)</h3>
+<p>Una media query aplica reglas solo si se cumple una condición, normalmente el ancho de la ventana:</p>
+<pre><code>.rejilla { grid-template-columns: repeat(5, 1fr); }      <span class="c">/* web */</span>
+@media (max-width: 1199px) { .rejilla { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 959px)  { .rejilla { grid-template-columns: repeat(3, 1fr); } }</code></pre>
+<p>Otras media queries del proyecto: <code>prefers-reduced-motion</code> (la persona pidió en su sistema menos animaciones) y los cortes de 767px y 959px para pasar al menú móvil y a los filtros en desplegables.</p>
+<h3>CSS Modules</h3>
+<p>Un archivo <code>Boton.module.css</code> es un <strong>CSS Module</strong>: sus clases se importan en el componente como un objeto, y Next.js les cambia el nombre por uno único (por ejemplo <code>Boton_primario__x7a2b</code>). Así dos componentes pueden tener una clase <code>.primario</code> sin pisarse.</p>
+<pre><code>import estilos from "./Boton.module.css";
+&lt;button className={estilos.primario}&gt;Aceptar&lt;/button&gt;</code></pre>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Las variables CSS son como la paleta de pinturas de un pintor: en vez de mezclar el morado cada vez, lo tiene en un frasco con etiqueta «morado de marca». Si un día cambia el tono, cambia un frasco y todos los cuadros cambian. Los CSS Modules son como poner el nombre del dueño en cada frasco: dos pintores pueden tener un frasco «azul» sin confundirse.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>Los estilos están en tres niveles:</p>
+<ol>
+<li><code>src/styles/tokens.css</code>: todas las variables (colores, tipografía, espacios, radios, sombras). Es la única fuente de valores.</li>
+<li><code>src/app/globals.css</code>: reglas generales (reset, tipo de letra del <code>body</code>, el anillo de foco <code>:focus-visible</code>, la clase <code>.contenedor</code>, <code>.solo-lectores</code> y la reducción de movimiento).</li>
+<li>Un <code>.module.css</code> por componente, que solo usa <code>var(--...)</code>.</li>
+</ol>
+<p>Otras técnicas de CSS en el proyecto: <code>mask-image</code> para los iconos, <code>position: sticky</code> para el encabezado, <code>scroll-snap</code> para el carrusel de mundos en móvil, <code>conic-gradient</code> y <code>radial-gradient</code> para el brillo holográfico de los cromos.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Taquilla tendría su propio <code>tokens.css</code> exportado de su Figma, con sus colores y tipografías. Un detalle propio de Taquilla: el campo <code>afiche</code> de un evento no es una foto sino dos colores y un patrón (<code>{ color1, color2, patron }</code>). Se pinta con un degradado CSS, algo como <code>background: linear-gradient(135deg, var(--c1), var(--c2))</code> donde <code>--c1</code> y <code>--c2</code> se pasan con <code>style</code> desde el componente, igual que Cromoverso pasa <code>--icono</code> o el color del cromo.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-css"> Ya lo estudié</label>
+</section>
+
+<section id="s-js" data-titulo="JavaScript que usa el proyecto">
+<h2><span class="num">1.4</span> JavaScript que usa el proyecto</h2>
+<p>Esta sección repasa solo la sintaxis de JavaScript moderno que aparece en el código, para que puedas leer cualquier archivo sin trabarte.</p>
+<h3>Variables, funciones y funciones flecha</h3>
+<pre><code>const DURACION = 60 * 60 * 24 * 180;   <span class="c">// const: no se reasigna</span>
+let intento = 0;                       <span class="c">// let: sí se reasigna</span>
+
+function sumar(a, b) { return a + b; }
+const sumar2 = (a, b) =&gt; a + b;        <span class="c">// función flecha, lo mismo</span></code></pre>
+<h3>Desestructuración y spread</h3>
+<pre><code>const { id } = await params;                       <span class="c">// saca la propiedad id del objeto</span>
+const [mundo, mundos, rarezas] = await Promise.all([...]); <span class="c">// saca posiciones de una lista</span>
+const filtros2 = { mundo: "neon", ...filtros };    <span class="c">// copia todas las propiedades de filtros</span></code></pre>
+<h3>Operadores que salvan de errores</h3>
+<ul>
+<li><code>a?.b</code> (encadenamiento opcional): si <code>a</code> es <code>null</code> o <code>undefined</code>, da <code>undefined</code> en vez de romper. Ej.: <code>almacen.get("idioma")?.value</code>.</li>
+<li><code>a ?? b</code> (fusión de nulos): usa <code>b</code> solo si <code>a</code> es <code>null</code> o <code>undefined</code>. Ej.: <code>preferencias.idioma ?? idiomas?.predeterminado ?? "es"</code>.</li>
+<li><code>cond ? x : y</code> (ternario): un if/else en una expresión.</li>
+</ul>
+<h3>Métodos de listas</h3>
+<pre><code>mundos.map((m) =&gt; m.nombre)        <span class="c">// transforma cada elemento → nueva lista</span>
+cromos.filter((c) =&gt; c.holografico) <span class="c">// se queda con los que cumplen</span>
+rarezas.some((r) =&gt; r.id === "dorada") <span class="c">// ¿alguno cumple? → true/false</span>
+TIPOS.find((t) =&gt; t === tipo)       <span class="c">// el primero que cumple, o undefined</span>
+lista.slice(0, 3)                   <span class="c">// los 3 primeros</span></code></pre>
+<h3>Asincronía: promesas, async/await y Promise.all</h3>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Pedir datos por internet tarda. JavaScript no se queda congelado esperando: la petición devuelve una <strong>promesa</strong>, un objeto que dice «el resultado llegará después». Con <code>await</code> esperas a que se cumpla, dentro de una función marcada <code>async</code>. Si la promesa falla, <code>await</code> lanza un error que atrapas con <code>try/catch</code>.</p>
+<p><code>Promise.all([a, b, c])</code> lanza varias promesas <strong>a la vez</strong> y espera a que terminen todas. Si una falla, falla todo.</p></div>
+<pre><code><span class="c">// En serie: 3 esperas una tras otra (lento)</span>
+const mundo = await obtenerMundo(id);
+const mundos = await obtenerMundos();
+const rarezas = await obtenerRarezas();
+
+<span class="c">// En paralelo: las 3 viajan juntas (lo que hace el proyecto)</span>
+const [mundo, mundos, rarezas] = await Promise.all([
+  obtenerMundo(id), obtenerMundos(), obtenerRarezas(),
+]);</code></pre>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Una promesa es el ficho que te dan en una panadería: no tienes el pan todavía, pero tienes la garantía de que te lo entregarán (o te dirán que se acabó). <code>Promise.all</code> es mandar a tres amigos a tres panaderías al mismo tiempo en vez de ir tú a una, luego a otra y luego a otra.</p></div>
+<h3>fetch, clases y errores</h3>
+<pre><code>const respuesta = await fetch(url, { headers: { Accept: "application/json" } });
+if (!respuesta.ok) throw new ErrorApi(respuesta.status, "codigo", "mensaje");
+const datos = await respuesta.json();</code></pre>
+<p><code>respuesta.ok</code> es <code>true</code> si el código está entre 200 y 299. <code>ErrorApi</code> es una <strong>clase</strong> que hereda de <code>Error</code> (<code>class ErrorApi extends Error</code>) y le agrega el estado HTTP y el código de la API, para poder preguntar después <code>error instanceof ErrorApi &amp;&amp; error.estado === 404</code>.</p>
+<h3>Módulos</h3>
+<pre><code>export function obtenerMundos() { ... }        <span class="c">// exportación con nombre</span>
+import { obtenerMundos } from "@/lib/api";    <span class="c">// @ = carpeta src (alias de tsconfig)</span>
+export default function Pagina() { ... }       <span class="c">// exportación por defecto (las páginas de Next)</span></code></pre>
+<h3>Plantillas de texto y expresiones regulares</h3>
+<pre><code>`/mundos/${id}`                       <span class="c">// template literal: mete variables en un texto</span>
+"Hola {nombre}".replace(/\{(\w+)\}/g, ...) <span class="c">// regex: busca {palabra} en todo el texto</span>
+String(7).padStart(3, "0")           <span class="c">// "007": así se numeran los cromos</span></code></pre>
+<label class="marcar"><input type="checkbox" data-marca="s-js"> Ya lo estudié</label>
+</section>
+
+<section id="s-ts" data-titulo="TypeScript">
+<h2><span class="num">1.5</span> TypeScript</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>TypeScript es JavaScript con <strong>tipos</strong>: le dices al editor qué forma tiene cada dato, y él te avisa <em>antes de ejecutar</em> si lo usas mal. Al compilar, los tipos desaparecen y queda JavaScript normal. Los archivos son <code>.ts</code> (lógica) y <code>.tsx</code> (con JSX, o sea componentes).</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Los tipos son como las formas de un juguete de encajar figuras: el círculo solo entra por el hueco redondo. Si intentas meter un texto donde va un número, TypeScript no te deja «encajarlo», y te das cuenta al escribir, no cuando el usuario ya está usando la página.</p></div>
+<h3>Lo que verás en el proyecto</h3>
+<pre><code><span class="c">// Tipo de objeto (src/lib/tipos.ts)</span>
+export type Mundo = {
+  id: string; nombre: string; color: string; tema: string;
+  numeros: { desde: number; hasta: number };
+  totalCromos: number; porRareza: Record&lt;IdRareza, number&gt;; ...
+};
+
+<span class="c">// Unión: solo uno de estos valores</span>
+export type IdIdioma = "es" | "en";
+export type IdRareza = "comun" | "rara" | "epica" | "legendaria";
+export type TipoCromo = "heroe" | "aliado" | "villano";
+
+<span class="c">// Lista de solo lectura con los valores válidos del filtro tipo</span>
+export const TIPOS_DE_CROMO: readonly TipoCromo[] = ["heroe", "aliado", "villano"];
+
+<span class="c">// Record&lt;Clave, Valor&gt;: objeto con esas claves. porRareza = { comun: 12, rara: 5, ... }</span>
+
+<span class="c">// Genérico: Lista&lt;T&gt; sirve para cualquier tipo T</span>
+export type Lista&lt;T&gt; = { datos: T[] };
+pedir&lt;Lista&lt;Rareza&gt;&gt;("/rarezas", 60);
+
+<span class="c">// Opcional: la propiedad puede no estar</span>
+type Filtros = { rareza?: string; tipo?: TipoCromo };
+
+<span class="c">// Guarda de tipo: si devuelve true, TS sabe que valor es IdIdioma</span>
+function esIdioma(valor: unknown): valor is IdIdioma { ... }</code></pre>
+<h3>Modo estricto y opciones del <code>tsconfig.json</code></h3>
+<div class="tabla"><table>
+<tr><th>Opción</th><th>Qué hace</th></tr>
+<tr><td><code>strict: true</code></td><td>Activa todas las revisiones fuertes: no deja usar algo que puede ser <code>null</code> sin revisarlo, ni dejar parámetros sin tipo</td></tr>
+<tr><td><code>noUncheckedIndexedAccess</code></td><td><code>lista[0]</code> puede ser <code>undefined</code> (la lista puede estar vacía), así que te obliga a revisarlo. Por eso en el código ves <code>primero?.focus()</code></td></tr>
+<tr><td><code>noFallthroughCasesInSwitch</code></td><td>No deja que un <code>case</code> de un <code>switch</code> caiga al siguiente sin querer</td></tr>
+<tr><td><code>allowJs: false</code></td><td>Solo TypeScript en el proyecto</td></tr>
+<tr><td><code>paths: { "@/*": ["./src/*"] }</code></td><td>El alias <code>@/</code>: <code>@/lib/api</code> en vez de <code>../../../lib/api</code></td></tr>
+</table></div>
+<p><code>unknown</code> vs <code>any</code>: <code>any</code> apaga la revisión (prohibido en la práctica); <code>unknown</code> dice «no sé qué es, revísalo antes de usarlo». El proyecto usa <code>unknown</code> para los valores que llegan de afuera (cookies, URL).</p>
+<p>El script <code>npm run typecheck</code> ejecuta <code>next typegen &amp;&amp; tsc --noEmit</code>: primero Next.js genera los tipos de las rutas (<code>PageProps&lt;"/mundos/[id]"&gt;</code>, <code>LayoutProps&lt;"/"&gt;</code>) y luego TypeScript revisa todo sin generar archivos.</p>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p><code>src/lib/tipos.ts</code> copia la forma de las respuestas del contrato de la API: <code>Mundo</code>, <code>MundoConCromos</code> (trae <code>cromos</code> y <code>especiales</code>), <code>Cromo</code>, <code>Rareza</code>, <code>Paginacion</code>, <code>ListaPaginada&lt;T&gt;</code>, <code>Textos</code> (un objeto recursivo: cada valor es un texto u otro objeto de textos) y <code>RespuestaTextos</code>.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Los tipos saldrían de su contrato: un <code>ResumenEvento</code> con <code>id</code>, <code>slug</code>, <code>titulo</code>, <code>categoria</code>, <code>fecha</code> (texto ISO), <code>recinto: { nombre, ciudad }</code>, <code>precioDesde</code> (número entero en pesos), <code>afiche: { color1, color2, patron }</code> y <code>disponibilidad: { disponibles, agotado, ultimasEntradas }</code>; un <code>DetalleEvento</code> que agrega <code>descripcion</code>, <code>funciones[]</code>, <code>localidades[]</code>, etc.; <code>Categoria</code> y <code>Ciudad</code>. La paginación tiene la misma forma que en Cromoverso: <code>{ pagina, porPagina, total, paginas }</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-ts"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 2 · React</div>
+
+<section id="s-componentes" data-titulo="Componentes, JSX y props">
+<h2><span class="num">2.1</span> Componentes, JSX y props</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p><strong>React</strong> es una librería para construir interfaces con <strong>componentes</strong>: funciones que reciben datos y devuelven lo que se debe ver. En vez de escribir una página gigante, la armas con piezas: <code>Boton</code>, <code>TarjetaCromo</code>, <code>Encabezado</code>…</p>
+<p><strong>JSX</strong> es la sintaxis parecida a HTML que va dentro de JavaScript. Diferencias con HTML: <code>className</code> en vez de <code>class</code>, <code>htmlFor</code> en vez de <code>for</code>, los valores de JavaScript van entre llaves <code>{ }</code>, y los atributos se escriben en camelCase (<code>tabIndex</code>, <code>onClick</code>).</p>
+<p><strong>Props</strong> son los datos que un componente recibe del que lo usa, como los parámetros de una función. <code>children</code> es una prop especial: lo que va entre la etiqueta de apertura y la de cierre.</p></div>
+<pre><code>type Props = { variante?: "primario" | "secundario"; children: ReactNode; onClick?: () =&gt; void };
+
+export function Boton({ variante = "primario", children, onClick }: Props) {
+  return (
+    &lt;button className={estilos[variante]} onClick={onClick}&gt;
+      {children}
+    &lt;/button&gt;
+  );
+}
+
+<span class="c">// Uso:</span>
+&lt;Boton variante="secundario" onClick={() =&gt; decidir(false)}&gt;Rechazar&lt;/Boton&gt;</code></pre>
+<h3>Listas y la prop <code>key</code></h3>
+<p>Para pintar una lista se usa <code>.map()</code>. Cada elemento necesita una <code>key</code> única para que React sepa cuál es cuál si la lista cambia.</p>
+<pre><code>{mundos.map((mundo) =&gt; &lt;TarjetaMundo key={mundo.id} mundo={mundo} /&gt;)}</code></pre>
+<h3>Mostrar algo solo si se cumple una condición</h3>
+<pre><code>{activo ? &lt;Etiqueta&gt;Estás aquí&lt;/Etiqueta&gt; : &lt;Icono nombre="chevronder" /&gt;}
+{cromos.length === 0 &amp;&amp; &lt;EstadoVacio /&gt;}
+if (consentimiento !== null) return null;   <span class="c">// no pinta nada</span></code></pre>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Los componentes son fichas de Lego. Una ficha <code>Boton</code> se fabrica una vez y se usa en mil lugares; las props son el color y el tamaño que eliges para cada uso. <code>children</code> es lo que metes dentro de una ficha hueca.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>Los componentes están en cuatro carpetas según su nivel:</p>
+<ul>
+<li><code>components/ui</code>: piezas base del sistema de diseño (<code>Boton</code>, <code>BotonEnlace</code>, <code>Campo</code>, <code>Etiqueta</code>, <code>Tarjeta</code>, <code>Icono</code>, <code>SelectorIdioma</code>, <code>AvisoCookies</code>). <strong>No piden textos a la API</strong>: los reciben por props. Así son reutilizables y fáciles de probar.</li>
+<li><code>components/layout</code>: lo que se repite en todas las vistas (<code>Encabezado</code>, <code>MenuMovil</code>, <code>Pie</code>, <code>Marca</code>, <code>Idioma</code>, <code>SaltarAlContenido</code>, <code>GestorCookies</code>).</li>
+<li><code>components/catalogo</code>: piezas del álbum (<code>TarjetaCromo</code>, <code>TarjetaMundo</code>, <code>InsigniaRareza</code>, <code>IlustracionCromo</code>, <code>FiltrosMovil</code>).</li>
+<li><code>components/vistas</code>: una vista completa armada con las piezas (<code>VistaInicio</code>, <code>VistaCatalogo</code>, <code>VistaCuenta</code>). Además <code>components/estados/Estado</code> para carga, vacío y error.</li>
+</ul>
+<p>Ejemplo de separación: <code>AvisoCookies</code> (ui) solo dibuja el aviso con los textos que le pasen; <code>GestorCookies</code> (layout) decide si mostrarlo, saca los textos del contexto con <code>t("cookies.banner.titulo")</code> y ejecuta la decisión.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>La misma división funciona: <code>ui</code> igual (botón, campo, etiqueta, tarjeta, selector de idioma, aviso de cookies); y en vez de <code>catalogo</code> tendría algo como <code>eventos</code> con <code>TarjetaEvento</code>, <code>Afiche</code> (el degradado), <code>InsigniaDisponibilidad</code> (agotado / últimas entradas) y los filtros de categoría, ciudad, búsqueda y orden.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-componentes"> Ya lo estudié</label>
+</section>
+
+<section id="s-estado" data-titulo="Estado y hooks">
+<h2><span class="num">2.2</span> Estado y hooks</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>El <strong>estado</strong> es la memoria de un componente: datos que cambian mientras la persona usa la página (¿el menú está abierto?, ¿qué idioma eligió?). Cuando el estado cambia, React vuelve a ejecutar el componente y actualiza solo lo que cambió en pantalla.</p>
+<p>Los <strong>hooks</strong> son funciones que empiezan por <code>use</code> y le dan superpoderes a un componente. Reglas: se llaman siempre en el nivel superior del componente (no dentro de un <code>if</code> ni de un bucle) y solo en componentes de cliente.</p></div>
+<div class="tabla"><table>
+<tr><th>Hook</th><th>Para qué sirve</th><th>Dónde se usa en Cromoverso</th></tr>
+<tr><td><code>useState</code></td><td>Guardar un valor que cambia. Devuelve <code>[valor, setValor]</code></td><td><code>abierto</code> del menú en <code>Encabezado</code>; <code>idioma</code>, <code>textos</code>, <code>consentimiento</code> en el contexto</td></tr>
+<tr><td><code>useEffect</code></td><td>Hacer algo «por fuera» de React después de pintar (tocar el DOM, escuchar teclas). Puede devolver una función de limpieza</td><td>Poner <code>document.documentElement.lang</code>; bloquear el scroll del <code>body</code> con el menú abierto; escuchar Escape y Tab en el menú</td></tr>
+<tr><td><code>useRef</code></td><td>Guardar una referencia a un elemento del DOM (o un valor que no repinta)</td><td>El botón hamburguesa para devolverle el foco; el panel del menú</td></tr>
+<tr><td><code>useCallback</code></td><td>Recordar una función para que no se cree una nueva en cada render</td><td><code>cerrarMenu</code>, <code>cambiarIdioma</code>, <code>decidirCookies</code>, <code>t</code></td></tr>
+<tr><td><code>useMemo</code></td><td>Recordar un valor calculado</td><td>El objeto que reparte el contexto</td></tr>
+<tr><td><code>useTransition</code></td><td>Marcar una actualización como «no urgente» y saber si está en curso</td><td><code>cambiandoIdioma</code> mientras llegan los textos del otro idioma</td></tr>
+<tr><td><code>useContext</code></td><td>Leer un contexto (ver la sección siguiente)</td><td>Dentro de <code>usePreferencias()</code></td></tr>
+<tr><td><code>usePathname</code>, <code>useRouter</code></td><td>Hooks de Next.js: ruta actual y navegar por código</td><td>Marcar el enlace activo; filtros en móvil con <code>router.push</code></td></tr>
+</table></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p><code>useState</code> es una pizarra que el componente mira cada vez que se dibuja: si alguien borra y escribe otra cosa, se vuelve a dibujar. <code>useEffect</code> es una nota que dice «cuando termines de dibujar, haz esto otro», como cerrar la puerta (bloquear el scroll) al abrir el menú; la función de limpieza es «y cuando te vayas, vuelve a abrirla». <code>useRef</code> es un dedo que señala un elemento de la página para poder tocarlo después.</p></div>
+<h3>Por qué <code>useCallback</code> arregló un error real</h3>
+<p>En el menú móvil, un <code>useEffect</code> enfoca el primer enlace cuando el menú se abre, y depende de la función <code>onCerrar</code>. Sin <code>useCallback</code>, el <code>Encabezado</code> creaba una función <code>cerrarMenu</code> nueva en cada render; el efecto veía «cambió <code>onCerrar</code>» y volvía a enfocar el primer enlace una y otra vez, así que el foco saltaba solo. Con <code>useCallback(..., [])</code> la función es la misma siempre y el efecto solo corre al abrir.</p>
+<h3>Cerrar el menú al cambiar de ruta sin <code>useEffect</code></h3>
+<p>En <code>Encabezado.tsx</code> se guarda la ruta anterior en estado y, si es distinta a la actual, se cierra el menú <em>durante el render</em>. Es el patrón que recomienda React para «ajustar estado cuando cambia una prop», y evita la regla de ESLint <code>react-hooks/set-state-in-effect</code> (no llamar <code>setState</code> directamente dentro de un efecto).</p>
+<pre><code>const [rutaAnterior, setRutaAnterior] = useState(rutaActual);
+if (rutaActual !== rutaAnterior) {
+  setRutaAnterior(rutaActual);
+  setAbierto(false);
+}</code></pre>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Los mismos hooks: <code>useState</code> para el menú y para el campo de búsqueda; <code>useTransition</code> o un estado de carga al cambiar de idioma; <code>useEffect</code> para el foco del menú y el <code>lang</code>. En los formularios de ingreso y registro (sprints siguientes) aparecería <code>useActionState</code> o un estado de «enviando» para deshabilitar el botón mientras responde la API.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-estado"> Ya lo estudié</label>
+</section>
+
+<section id="s-contexto" data-titulo="Context: datos para toda la app">
+<h2><span class="num">2.3</span> Context: datos para toda la app</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Normalmente los datos bajan de padre a hijo por props. Si un dato lo necesitan muchos componentes en distintos niveles (el idioma, los textos), pasarlo por props en cada nivel es tedioso («prop drilling»). <strong>Context</strong> resuelve eso: un <strong>Provider</strong> en lo alto del árbol pone un valor, y cualquier componente de abajo lo lee con <code>useContext</code>.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Sin contexto, es como pasar un mensaje de mano en mano por toda una fila de personas. Con contexto, es como la emisora de radio del edificio: el Provider transmite, y cualquiera que encienda su radio (<code>usePreferencias()</code>) escucha lo mismo, sin importar en qué piso esté.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p><code>src/contexto/Preferencias.tsx</code> define <code>ProveedorPreferencias</code> y el hook <code>usePreferencias()</code>. El layout (servidor) le pasa los valores iniciales: el idioma, la lista de idiomas, los textos y el consentimiento leído de la cookie. El contexto reparte:</p>
+<div class="tabla"><table>
+<tr><th>Valor</th><th>Qué es</th></tr>
+<tr><td><code>idioma</code>, <code>idiomas</code></td><td>Idioma actual (<code>"es"</code> o <code>"en"</code>) y opciones del selector</td></tr>
+<tr><td><code>textos</code></td><td>Todos los textos de la interfaz en el idioma actual</td></tr>
+<tr><td><code>t(ruta, valores)</code></td><td>Atajo para sacar un texto: <code>t("navbar.enlaces.inicio")</code></td></tr>
+<tr><td><code>cambiarIdioma(nuevo)</code></td><td>Pide los textos nuevos con la Server Action y, si hay consentimiento, guarda la cookie</td></tr>
+<tr><td><code>cambiandoIdioma</code>, <code>errorIdioma</code></td><td>Si está cargando y si falló</td></tr>
+<tr><td><code>consentimiento</code>, <code>decidirCookies(acepta)</code></td><td>La decisión de cookies y la función para tomarla</td></tr>
+</table></div>
+<pre><code>const cambiarIdioma = useCallback((nuevo: IdIdioma) =&gt; {
+  iniciarCambio(async () =&gt; {
+    try {
+      const nuevosTextos = await cargarTextos(nuevo);   <span class="c">// Server Action</span>
+      setTextos(nuevosTextos);
+      setIdioma(nuevo);
+      setErrorIdioma(false);
+      if (consentimiento === "aceptado") guardarCookie(COOKIE_IDIOMA, nuevo);
+    } catch {
+      setErrorIdioma(true);
+    }
+  });
+}, [consentimiento]);</code></pre>
+<p>El hook protege contra un uso equivocado: si un componente llama <code>usePreferencias()</code> fuera del Provider, lanza el error «usePreferencias necesita ProveedorPreferencias».</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Taquilla necesita exactamente lo mismo para idioma y cookies (su contrato pide las mismas cookies <code>consentimiento</code> e <code>idioma</code>). En sprints siguientes podría tener además un contexto de sesión con la persona que inició sesión (de <code>GET /sesion</code>) para mostrar su nombre y el menú de cuenta en la navegación.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-contexto"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 3 · Next.js</div>
+
+<section id="s-next" data-titulo="Qué es Next.js y el App Router">
+<h2><span class="num">3.1</span> Qué es Next.js y el App Router</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>React solo dibuja componentes. <strong>Next.js</strong> es un <em>framework</em> encima de React que agrega lo que falta para una web completa: rutas por carpetas, ejecución en el servidor, caché, optimización de fuentes e imágenes, y la compilación para producción.</p>
+<p>El <strong>App Router</strong> es la forma de organizar rutas en la carpeta <code>src/app</code>: <strong>cada carpeta es un segmento de la URL</strong> y el archivo <code>page.tsx</code> dentro de ella es lo que se ve en esa URL.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>La carpeta <code>app</code> es el directorio de un edificio. Cada carpeta es un piso u oficina, y <code>page.tsx</code> es la puerta de esa oficina. <code>layout.tsx</code> es el pasillo común (con el letrero del edificio y la salida) que se ve desde todas las oficinas.</p></div>
+<div class="tabla"><table>
+<tr><th>Archivo en <code>src/app</code></th><th>URL o función</th></tr>
+<tr><td><code>layout.tsx</code></td><td>Marco de todas las páginas: <code>html</code>, <code>body</code>, encabezado, pie, provider</td></tr>
+<tr><td><code>page.tsx</code></td><td><code>/</code> (inicio)</td></tr>
+<tr><td><code>mundos/page.tsx</code></td><td><code>/mundos</code> → redirige al primer mundo</td></tr>
+<tr><td><code>mundos/[id]/page.tsx</code></td><td><code>/mundos/neon</code>, <code>/mundos/cualquier-cosa</code> (ruta dinámica)</td></tr>
+<tr><td><code>ingresar/page.tsx</code>, <code>registro/page.tsx</code></td><td><code>/ingresar</code>, <code>/registro</code></td></tr>
+<tr><td><code>loading.tsx</code></td><td>Lo que se ve mientras una página carga</td></tr>
+<tr><td><code>error.tsx</code></td><td>Lo que se ve si una página falla</td></tr>
+<tr><td><code>not-found.tsx</code></td><td>Página de «no encontrado» (404)</td></tr>
+<tr><td><code>global-error.tsx</code></td><td>Error que tumba hasta el layout</td></tr>
+<tr><td><code>acciones.ts</code></td><td>No es ruta: Server Actions (<code>"use server"</code>)</td></tr>
+<tr><td><code>globals.css</code></td><td>No es ruta: estilos globales</td></tr>
+</table></div>
+<h3>Lo nuevo de Next.js 16 que aparece en el código</h3>
+<ul>
+<li><code>params</code> y <code>searchParams</code> son <strong>promesas</strong>: se escribe <code>const { id } = await params;</code>.</li>
+<li><code>cookies()</code> es asíncrona: <code>const almacen = await cookies();</code>.</li>
+<li><code>error.tsx</code> recibe una función <code>retry</code> para reintentar (en versiones anteriores se llamaba <code>reset</code>).</li>
+<li>Tipos globales generados: <code>PageProps&lt;"/mundos/[id]"&gt;</code> y <code>LayoutProps&lt;"/"&gt;</code> (por eso existe <code>next typegen</code> en el script de tipos).</li>
+</ul>
+<h3>Los comandos</h3>
+<div class="tabla"><table>
+<tr><th>Comando</th><th>Qué hace</th></tr>
+<tr><td><code>npm run dev</code></td><td>Servidor de desarrollo en <code>http://localhost:3000</code> que se recarga solo al guardar</td></tr>
+<tr><td><code>npm run build</code></td><td>Compila la versión de producción en <code>.next</code> (lo mismo que hace Vercel)</td></tr>
+<tr><td><code>npm run start</code></td><td>Sirve la versión compilada (para probar producción en local)</td></tr>
+</table></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Las rutas de Taquilla serían: <code>app/page.tsx</code> (inicio), <code>app/eventos/page.tsx</code> (explorar, con filtros en la URL), <code>app/eventos/[slug]/page.tsx</code> (detalle; el contrato pide usar el <code>slug</code>, no el <code>id</code>), <code>app/ingresar/page.tsx</code> y <code>app/registro/page.tsx</code>. Los nombres exactos de carpetas dependen de cómo lo hizo tu compañero: revisa su carpeta <code>app</code> antes de la sustentación.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-next"> Ya lo estudié</label>
+</section>
+
+<section id="s-rutas" data-titulo="Rutas, params y searchParams">
+<h2><span class="num">3.2</span> Rutas dinámicas, params y searchParams</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Una carpeta con corchetes, como <code>[id]</code>, es un <strong>segmento dinámico</strong>: atrapa cualquier valor en esa posición de la URL. Next.js le entrega a la página ese valor en <code>params</code>. Lo que va después de <code>?</code> en la URL llega en <code>searchParams</code>.</p>
+<p>URL <code>/mundos/neon?rareza=legendaria&amp;tipo=heroe</code> → <code>params = { id: "neon" }</code> y <code>searchParams = { rareza: "legendaria", tipo: "heroe" }</code>.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p><code>[id]</code> es un casillero con nombre variable: «Oficina del mundo ___». La recepcionista lee el nombre en la puerta (<code>params.id</code>) y busca el expediente. Los <code>searchParams</code> son las notas adhesivas pegadas en la solicitud: «solo legendarias, solo héroes».</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<pre><code>export default async function CatalogoDeMundo({ params, searchParams }: PageProps&lt;"/mundos/[id]"&gt;) {
+  const { id } = await params;
+  const [mundo, mundos, rarezas] = await Promise.all([
+    mundoONoEncontrado(id), obtenerMundos(), obtenerRarezas(),
+  ]);
+  const filtros = leerFiltros(await searchParams, rarezas.datos);
+  const hayFiltros = Boolean(filtros.rareza || filtros.tipo);
+  <span class="c">// Sin filtros bastan los 20 cromos de GET /mundos/:id; con filtros se piden a GET /cromos.</span>
+  const cromos = hayFiltros
+    ? (await obtenerCromos({ mundo: mundo.id, ...filtros, porPagina: 20 })).datos
+    : mundo.cromos;
+  return &lt;VistaCatalogo mundo={mundo} mundos={mundos.datos} rarezas={rarezas.datos} cromos={cromos} filtros={filtros} /&gt;;
+}</code></pre>
+<p>Otras herramientas de navegación de Next.js en el proyecto:</p>
+<ul>
+<li><code>notFound()</code>: corta la página y muestra <code>not-found.tsx</code>. Se llama si la API responde 404 para ese mundo.</li>
+<li><code>redirect(url)</code>: manda a otra ruta. <code>/mundos</code> redirige al primer mundo que entrega la API.</li>
+<li><code>&lt;Link href&gt;</code>: enlace que navega sin recargar toda la página.</li>
+<li><code>router.push(url, { scroll: false })</code>: navegar por código (los selects de filtros en móvil).</li>
+</ul></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p><code>app/eventos/[slug]/page.tsx</code> recibe <code>params.slug</code> y llama <code>GET /eventos/:slug</code>; si la API responde 404 <code>no_encontrado</code>, el contrato dice textualmente que se use <code>notFound()</code>. Explorar lee de <code>searchParams</code> los filtros <code>categoria</code>, <code>ciudad</code>, <code>q</code>, <code>orden</code> y <code>pagina</code>, y se los pasa a <code>GET /eventos</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-rutas"> Ya lo estudié</label>
+</section>
+
+<section id="s-server" data-titulo="Server y Client Components">
+<h2><span class="num">3.3</span> Server Components y Client Components</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>En el App Router, <strong>todos los componentes son de servidor por defecto</strong>. Un <strong>Server Component</strong> se ejecuta solo en el servidor: puede ser <code>async</code>, hacer <code>await fetch(...)</code>, leer cookies y variables de entorno secretas. Su código <em>no se envía</em> al navegador; solo viaja el resultado (HTML).</p>
+<p>Un <strong>Client Component</strong> empieza con la línea <code>"use client"</code>. Se pinta primero en el servidor (para que el HTML llegue completo) y luego se «hidrata» en el navegador: ahí puede usar estado, efectos, eventos (<code>onClick</code>), <code>document</code> y <code>window</code>.</p></div>
+<div class="tabla"><table>
+<tr><th></th><th>Server Component</th><th>Client Component</th></tr>
+<tr><td>Marca</td><td>Ninguna (por defecto)</td><td><code>"use client"</code> en la primera línea</td></tr>
+<tr><td>Puede pedir datos con <code>await</code></td><td>Sí</td><td>No directamente</td></tr>
+<tr><td>Hooks (<code>useState</code>, <code>useEffect</code>)</td><td>No</td><td>Sí</td></tr>
+<tr><td>Eventos (<code>onClick</code>)</td><td>No</td><td>Sí</td></tr>
+<tr><td>Ve <code>process.env.API_URL</code></td><td>Sí</td><td>No (solo variables <code>NEXT_PUBLIC_</code>)</td></tr>
+<tr><td>Envía JavaScript al navegador</td><td>No</td><td>Sí</td></tr>
+</table></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Un Server Component es como un plato que llega ya cocinado a la mesa: no necesitas la receta ni los ingredientes, solo el resultado. Un Client Component es como una parrilla de mesa: llega cocinada, pero trae su fuego para que tú sigas interactuando (voltear la carne = abrir el menú).</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<ul>
+<li><strong>Servidor</strong>: <code>layout.tsx</code>, todas las <code>page.tsx</code>, <code>lib/api.ts</code>, <code>lib/preferencias-servidor.ts</code>, <code>lib/seo.ts</code>. Ahí se piden los datos.</li>
+<li><strong>Cliente</strong>: el contexto <code>Preferencias.tsx</code>, <code>Encabezado</code>, <code>MenuMovil</code>, <code>Idioma</code>, <code>GestorCookies</code>, <code>SaltarAlContenido</code>, <code>FiltrosMovil</code>, las vistas (porque usan <code>t()</code> del contexto), <code>loading.tsx</code> y <code>not-found.tsx</code> (usan <code>t()</code>), y <code>error.tsx</code> y <code>global-error.tsx</code> (Next.js exige que sean de cliente).</li>
+</ul>
+<p>El patrón: <strong>la página (servidor) pide los datos y se los pasa como props a la vista (cliente)</strong>. La vista no hace peticiones; solo dibuja y reacciona.</p></div>
+<div class="caja ojo"><span class="chip">Ojo</span>
+<p>Lo que pasa del servidor al cliente por props tiene que poder convertirse a texto (serializable): objetos, listas, textos, números. No se pueden pasar funciones normales ni clases. Por eso el contexto recibe <code>textos</code> (un objeto) y no la función <code>obtenerTextos</code>.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Mismo patrón. Algo extra que Taquilla necesitará en los sprints de sesión: el contrato recomienda que el ingreso se haga en una Server Action y que el <code>token</code> se guarde en una cookie <code>httpOnly</code> del frontend, enviándolo desde el servidor como <code>Authorization: Bearer &lt;token&gt;</code>. Eso solo es posible en código de servidor. Nunca en <code>localStorage</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-server"> Ya lo estudié</label>
+</section>
+
+<section id="s-especiales" data-titulo="loading, error, not-found y global-error">
+<h2><span class="num">3.4</span> loading, error, not-found y global-error</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Next.js tiene archivos con nombre especial que muestran estados sin que tengas que programar la lógica:</p>
+<ul>
+<li><code>loading.tsx</code>: se muestra <strong>al instante</strong> mientras la página espera sus datos (Next.js usa <em>streaming</em>: envía primero el marco y el estado de carga, y luego el contenido cuando llega).</li>
+<li><code>error.tsx</code>: si la página lanza un error, en vez de romperse todo se muestra este componente, con una función para reintentar. Es un <em>límite de error</em> (error boundary): el error no sube más allá.</li>
+<li><code>not-found.tsx</code>: lo que se ve cuando se llama <code>notFound()</code> o la ruta no existe.</li>
+<li><code>global-error.tsx</code>: el último recurso, cuando falla el propio <code>layout.tsx</code>. Como reemplaza al layout, debe tener su propio <code>&lt;html&gt;</code> y <code>&lt;body&gt;</code>.</li>
+</ul></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p><code>loading</code> es el letrero «estamos preparando su pedido». <code>error</code> es el mesero que dice «se nos quemó, ¿lo preparo otra vez?». <code>not-found</code> es «ese plato no está en la carta». <code>global-error</code> es cuando se va la luz en todo el restaurante: ni siquiera hay carta, así que alguien sale con una linterna y un aviso escrito a mano.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>Los tres primeros usan el componente <code>Estado</code> y textos de la API (<code>estados.cargando</code>, <code>estados.error</code>, <code>estados.noEncontrado</code>). <code>error.tsx</code>:</p>
+<pre><code>"use client";
+export default function ErrorDeVista({ error, retry }: { error: unknown; retry: () =&gt; void }) {
+  const { t } = usePreferencias();
+  useEffect(() =&gt; { console.error(error); }, [error]);
+  return (
+    &lt;Estado icono="alerta" nivel="h1" rol="alert"
+      titulo={t("estados.error.titulo")} texto={t("estados.error.texto")}&gt;
+      &lt;Boton variante="primario" icono="intercambio" onClick={() =&gt; retry()}&gt;
+        {t("estados.error.botones.reintentar")}
+      &lt;/Boton&gt;
+    &lt;/Estado&gt;
+  );
+}</code></pre>
+<p><strong><code>global-error.tsx</code></strong> es especial: si el layout falló, probablemente <code>GET /textos</code> no respondió, así que no hay textos. Intenta cargarlos con la Server Action (con el idioma de la cookie); si tampoco puede, usa un respaldo bilingüe escrito en el código: «No se pudo cargar · Could not load», «La API no responde. Vuelve a intentarlo en unos segundos.» y «Reintentar · Try again». Es <strong>la única excepción</strong> a la regla de no escribir textos en el código, y está justificada porque sin API no hay de dónde sacarlos.</p></div>
+<div class="caja ojo"><span class="chip">Pregunta trampa</span>
+<p>«¿Por qué <code>/mundos/no-existe</code> responde 200 y no 404?» Porque existe <code>loading.tsx</code>: Next.js empieza a enviar la respuesta (con el estado de carga) <em>antes</em> de saber que el mundo no existe, y el código de estado HTTP ya salió como 200. La persona sí ve la página de no encontrado, y Next.js agrega <code>&lt;meta name="robots" content="noindex"&gt;</code> para que los buscadores no la indexen. Es un comportamiento conocido del streaming.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Su contrato pide lo mismo: estado de carga mientras la petición está en curso, estado de error con botón de reintentar para <code>500 error_interno</code> y <code>falla_simulada</code>, la página de no encontrado para un slug inexistente, y un estado vacío cuando <code>GET /eventos</code> responde <code>datos: []</code> (por ejemplo <code>?q=zzzz</code>). Ojo: sin resultados <strong>no es un error</strong>, es 200 con lista vacía.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-especiales"> Ya lo estudié</label>
+</section>
+
+<section id="s-acciones" data-titulo="Server Actions">
+<h2><span class="num">3.5</span> Server Actions</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Una <strong>Server Action</strong> es una función <code>async</code> que vive en el servidor pero se puede llamar desde un componente de cliente como si fuera local. Se marca con <code>"use server"</code>. Next.js crea por debajo una petición HTTP (POST) desde el navegador al servidor, ejecuta la función allá y devuelve el resultado.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es el timbre de la cocina. El mesero (cliente) no entra a cocinar; toca el timbre con la orden («textos en inglés»), la cocina (servidor) prepara y le devuelve el plato.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p><code>src/app/acciones.ts</code> tiene una sola acción:</p>
+<pre><code>"use server";
+export async function cargarTextos(idioma: IdIdioma): Promise&lt;Textos&gt; {
+  if (!esIdioma(idioma)) throw new Error("idioma_no_soportado");
+  const respuesta = await obtenerTextos(idioma);
+  return respuesta.textos;
+}</code></pre>
+<p>¿Por qué no hacer <code>fetch</code> a la API directo desde el navegador? (1) La dirección de la API está en <code>API_URL</code>, que solo existe en el servidor. (2) Se reutiliza la misma función con caché y reintentos. (3) Se valida el idioma <em>en el servidor</em>: aunque alguien llame la acción con <code>"fr"</code> a mano, se rechaza antes de ir a la API.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Mismo uso para el cambio de idioma. En sprints siguientes, Taquilla las usaría mucho más: ingresar (<code>POST /sesion</code>), registrarse (<code>POST /usuarios</code>), verificar el correo, recuperar la clave. Ahí la acción recibe los datos del formulario, llama a la API y devuelve los errores de <code>campos</code> para mostrarlos junto a cada campo.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-acciones"> Ya lo estudié</label>
+</section>
+
+<section id="s-cache" data-titulo="Caché de fetch y revalidate">
+<h2><span class="num">3.6</span> Caché de fetch y revalidate</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Una <strong>caché</strong> es una copia guardada de una respuesta para no pedirla otra vez. En Next.js, un <code>fetch</code> con <code>next: { revalidate: N }</code> guarda la respuesta y la reutiliza durante <code>N</code> segundos. Pasado ese tiempo, la próxima visita recibe todavía la copia vieja (rápido) mientras Next.js pide una nueva por detrás. Si esa nueva petición falla, se sigue sirviendo la copia anterior.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es el menú del día escrito en el tablero. No le preguntas al chef cada vez que entra un cliente; cada 5 minutos alguien revisa si cambió. Si el chef no contesta, el tablero sigue mostrando el menú anterior en vez de quedar en blanco.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<div class="tabla"><table>
+<tr><th>Datos</th><th>Constante</th><th>Segundos</th><th>Por qué</th></tr>
+<tr><td><code>/idiomas</code>, <code>/textos</code></td><td><code>CACHE_TEXTOS</code></td><td>300 (5 min)</td><td>Los textos casi nunca cambian</td></tr>
+<tr><td><code>/mundos</code>, <code>/mundos/:id</code>, <code>/rarezas</code>, <code>/cromos</code></td><td><code>CACHE_CATALOGO</code></td><td>60 (1 min)</td><td>Datos del catálogo, pueden cambiar más</td></tr>
+</table></div>
+<p>Beneficios concretos: la API de Fly.io se apaga si nadie la usa y tarda en despertar; la caché hace que la mayoría de visitas no esperen ese arranque, y que una caída corta de la API no tumbe el sitio. También reduce la carga sobre una API que comparte todo el curso.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Lo mismo para textos, categorías, ciudades y eventos. Pero <strong>nada que dependa de la sesión</strong> puede ir en caché compartida: <code>GET /sesion</code> debe pedirse sin caché (<code>cache: "no-store"</code>), porque si no, una persona podría ver el nombre de otra.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-cache"> Ya lo estudié</label>
+</section>
+
+<section id="s-metadata" data-titulo="Metadatos, fuentes y enlaces">
+<h2><span class="num">3.7</span> Metadatos, fuentes y enlaces</h2>
+<h3>generateMetadata</h3>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Los <strong>metadatos</strong> son el título de la pestaña y la descripción que ven los buscadores y las redes sociales. En Next.js, una página puede exportar <code>generateMetadata()</code> y devolver <code>{ title, description }</code>; Next.js los pone en el <code>&lt;head&gt;</code>.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p><code>src/lib/seo.ts</code> tiene <code>metadatosDePagina(pagina, valores)</code>, que lee <code>paginas.&lt;pagina&gt;.seo.titulo</code> y <code>.descripcion</code> de los textos de la API. En el catálogo se le pasa el nombre del mundo: <code>metadatosDePagina("albumMundo", { mundo: mundo.nombre })</code>. Si la API falla, devuelve <code>{}</code> y la página se muestra igual sin metadatos.</p>
+<p>Como el título se genera en el servidor, al cambiar de idioma en el navegador no se actualizaría solo. Por eso existe el hook <code>useTituloDePagina</code>, que cambia <code>document.title</code> cuando cambia el idioma (fue un <code>fix:</code> del sprint).</p></div>
+<h3>next/font</h3>
+<p><code>src/styles/fuentes.ts</code> carga Unbounded (títulos) y Rubik (texto) con <code>next/font/google</code>. Next.js descarga las fuentes al compilar y las sirve desde el mismo dominio: no hay petición a Google en cada visita y no hay salto de texto al cargar. Cada fuente expone una variable CSS (<code>--fuente-unbounded-next</code>), y <code>fuentes.css</code> conecta esa variable con el token del diseño (<code>--fuente-unbounded</code>).</p>
+<h3>Link</h3>
+<p><code>&lt;Link href="/mundos/neon"&gt;</code> genera un <code>&lt;a&gt;</code> normal (accesible, se puede abrir en otra pestaña), pero al hacer clic Next.js cambia solo el contenido sin recargar la página y precarga las rutas visibles.</p>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Su contrato lo pide explícitamente para el detalle: «Usa <code>titulo</code> y <code>descripcion</code> para los metadatos de la página (<code>generateMetadata</code>)». Taquilla además debe mostrar fechas en la zona <code>America/Bogota</code> y precios en pesos. Las herramientas nativas son <code>new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", ... })</code> y <code>new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })</code>, cambiando <code>es-CO</code> por <code>en-US</code> si el idioma es inglés.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-metadata"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 4 · La API</div>
+
+<section id="s-api" data-titulo="REST, JSON y el contrato">
+<h2><span class="num">4.1</span> REST, JSON y el contrato</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Una <strong>API</strong> (interfaz de programación) es una puerta para que un programa le pida datos a otro. Una API <strong>REST</strong> organiza esos datos como <strong>recursos</strong> con URLs (<code>/mundos</code>, <code>/mundos/neon</code>, <code>/cromos</code>) y usa los métodos HTTP para decir qué hacer con ellos. Un <strong>endpoint</strong> es una combinación método + ruta, por ejemplo <code>GET /mundos/:id</code> (los dos puntos marcan una parte variable).</p>
+<p>El <strong>contrato</strong> es el documento que dice qué endpoints hay, qué reciben, qué responden y qué errores pueden dar. Es el acuerdo entre quien hace la API (la profesora) y quien la usa (tú). Además existe la especificación <strong>OpenAPI</strong> (<code>/docs/openapi.yaml</code>), que es el mismo contrato en un formato que leen las máquinas, y la página <code>/docs</code> para probar los endpoints en el navegador.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>El contrato es la carta del restaurante: dice qué platos hay, qué traen y cuánto cuestan. No puedes pedir algo que no está en la carta (un filtro inventado da 422), y si lo pides bien, sabes exactamente qué te llega.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>Endpoints que usa el Sprint 1 (base <code>https://yanethm-cromoverso-api.fly.dev/api/v1</code>):</p>
+<div class="tabla"><table>
+<tr><th>Endpoint</th><th>Qué devuelve</th><th>Lo usa</th></tr>
+<tr><td><code>GET /idiomas</code></td><td><code>{ predeterminado: "es", datos: [{ codigo, nombre }] }</code></td><td>Layout (selector ES | EN)</td></tr>
+<tr><td><code>GET /textos?idioma=es</code></td><td><code>{ idioma, version, textos: {...} }</code>, todos los textos de la interfaz</td><td>Layout, Server Action, metadatos</td></tr>
+<tr><td><code>GET /mundos</code></td><td><code>{ datos: [6 mundos], totalAlbum }</code></td><td>Inicio, catálogo (panel Mundos), redirección de <code>/mundos</code></td></tr>
+<tr><td><code>GET /mundos/:id</code></td><td>El mundo con sus <code>cromos</code> (20) y sus <code>especiales</code></td><td>Catálogo</td></tr>
+<tr><td><code>GET /rarezas</code></td><td><code>{ datos: [{ id, nombre, icono, color, probabilidad, porcentaje }] }</code></td><td>Inicio (leyenda), catálogo (filtro), validación de filtros</td></tr>
+<tr><td><code>GET /cromos?mundo=&amp;rareza=&amp;tipo=&amp;edicion=album&amp;porPagina=</code></td><td>Lista paginada de cromos: <code>{ datos, paginacion }</code></td><td>Catálogo con filtros, cromos destacados del inicio</td></tr>
+</table></div>
+<p><strong>Forma de los errores</strong> (todos iguales): <code>{ "error": { "codigo": "no_encontrado", "mensaje": "...", "campos": {...} } }</code>. El código (<code>codigo</code>) es lo que el programa revisa; el texto para la persona sale de los textos de la interfaz, no del mensaje de la API.</p>
+<p><strong>Detalles del contrato que se respetaron</strong>:</p>
+<ul>
+<li><code>GET /mundos/:id</code> trae también los cromos especiales. El álbum solo muestra la edición <code>album</code>; por eso <code>obtenerCromos</code> siempre manda <code>edicion=album</code>.</li>
+<li>Un valor de filtro que no existe responde <strong>422</strong>. Por eso los filtros se validan antes de llamar a la API (ver S1-04).</li>
+<li>La API se apaga si lleva un rato sin uso (Fly.io): la primera petición puede tardar. La caché y los reintentos ayudan.</li>
+<li>Los datos son de prueba y compartidos con todo el curso.</li>
+</ul></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Base <code>https://yanethm-taquilla-api.fly.dev/api/v1</code>. Endpoints de las vistas públicas:</p>
+<div class="tabla"><table>
+<tr><th>Vista</th><th>Endpoint</th><th>Equivalente en Cromoverso</th></tr>
+<tr><td>Todas</td><td><code>GET /idiomas</code>, <code>GET /textos</code></td><td>Los mismos</td></tr>
+<tr><td>Inicio</td><td><code>GET /eventos/destacados</code>, <code>GET /categorias</code></td><td><code>GET /mundos</code>, <code>GET /rarezas</code></td></tr>
+<tr><td>Explorar</td><td><code>GET /eventos?categoria=&amp;ciudad=&amp;q=&amp;orden=&amp;pagina=&amp;porPagina=</code>, <code>GET /ciudades</code></td><td><code>GET /cromos?rareza=&amp;tipo=</code></td></tr>
+<tr><td>Detalle</td><td><code>GET /eventos/:slug</code>, <code>GET /eventos/:slug/relacionados</code></td><td><code>GET /mundos/:id</code></td></tr>
+<tr><td>Sesión (sprints siguientes)</td><td><code>POST /sesion</code>, <code>GET /sesion</code>, <code>DELETE /sesion</code>, <code>POST /usuarios</code>, <code>/verificacion</code>, <code>/recuperacion</code></td><td>(Cromoverso los tendrá en sus sprints 2 y 3)</td></tr>
+</table></div>
+<p>Diferencias para recordar: en Taquilla un evento se identifica en la URL por <code>slug</code> (<code>noche-de-salsa-brava</code>), las fechas vienen en UTC y se muestran en hora de Bogotá, el dinero es un entero en pesos, y <code>GET /textos</code> acepta <code>&amp;seccion=navbar,footer</code> para pedir solo algunas secciones. Cuentas de prueba con clave <code>taquilla123</code>: <code>laura@taquilla.test</code> y <code>nuevo@taquilla.test</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-api"> Ya lo estudié</label>
+</section>
+
+<section id="s-cliente" data-titulo="El cliente de la API (api.ts)">
+<h2><span class="num">4.2</span> El cliente de la API (<code>src/lib/api.ts</code>)</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Un <strong>cliente de API</strong> es un archivo que concentra todas las llamadas a la API. Las páginas no escriben <code>fetch</code> ni URLs: llaman funciones con nombre claro (<code>obtenerMundo(id)</code>). Si mañana cambia la dirección, el formato de error o la caché, se cambia en un solo lugar.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es el único mensajero autorizado para ir a la bodega. Todos le piden a él, y él sabe la dirección, cómo pedir, qué hacer si la bodega está cerrada (reintentar) y cómo traducir un «no hay» de la bodega a un error que el resto entienda.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso, pieza por pieza</span>
+<pre><code><span class="c">// 1. Un error con la forma del contrato</span>
+export class ErrorApi extends Error {
+  constructor(readonly estado: number, readonly codigo: string, mensaje: string) {
+    super(mensaje);
+    this.name = "ErrorApi";
+  }
+}
+
+<span class="c">// 2. La dirección sale de la variable de entorno, sin "/" al final</span>
+function direccionBase() {
+  const base = process.env.API_URL;
+  if (!base) throw new Error("Falta la variable de entorno API_URL (revisa .env.example).");
+  return base.replace(/\/+$/, "");
+}
+
+<span class="c">// 3. Una petición: cabeceras, caché y conversión del error</span>
+async function pedirUnaVez&lt;T&gt;(ruta: string, segundosEnCache: number): Promise&lt;T&gt; {
+  const respuesta = await fetch(`${direccionBase()}${ruta}`, {
+    headers: { Accept: "application/json", ...cabecerasDePrueba() },
+    next: { revalidate: segundosEnCache },
+  });
+  if (!respuesta.ok) {
+    const cuerpo = await respuesta.json().catch(() =&gt; null);
+    throw new ErrorApi(respuesta.status,
+      cuerpo?.error?.codigo ?? "error_interno",
+      cuerpo?.error?.mensaje ?? `HTTP ${respuesta.status}`);
+  }
+  return (await respuesta.json()) as T;
+}
+
+<span class="c">// 4. Funciones públicas, una por endpoint</span>
+export function obtenerMundo(id: string) {
+  return pedir&lt;MundoConCromos&gt;(`/mundos/${encodeURIComponent(id)}`, CACHE_CATALOGO);
+}
+export function obtenerCromos(filtros: FiltrosCromos) {
+  const parametros = new URLSearchParams({ edicion: "album" });
+  for (const [clave, valor] of Object.entries(filtros)) {
+    if (valor !== undefined &amp;&amp; valor !== "") parametros.set(clave, String(valor));
+  }
+  return pedir&lt;ListaPaginada&lt;Cromo&gt;&gt;(`/cromos?${parametros}`, CACHE_CATALOGO);
+}</code></pre>
+<ul>
+<li><code>&lt;T&gt;</code> (genérico): cada función dice qué tipo de respuesta espera, y TypeScript lo sabe en la página.</li>
+<li><code>encodeURIComponent(id)</code>: escapa caracteres raros para que un id con espacios o <code>/</code> no rompa la URL.</li>
+<li><code>URLSearchParams</code>: arma <code>edicion=album&amp;mundo=neon&amp;rareza=legendaria</code> correctamente codificado y omite los filtros vacíos.</li>
+<li><code>.catch(() =&gt; null)</code> al leer el cuerpo del error: si el servidor no respondió JSON (por ejemplo una página HTML de error), no se rompe.</li>
+</ul></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>El cliente sería casi idéntico: <code>obtenerEventosDestacados()</code>, <code>obtenerCategorias()</code>, <code>obtenerCiudades()</code>, <code>obtenerEventos({ categoria, ciudad, q, orden, pagina, porPagina })</code>, <code>obtenerEvento(slug)</code>, <code>obtenerRelacionados(slug)</code>. Para sprints con sesión, la función <code>pedir</code> aceptaría un token y agregaría la cabecera <code>Authorization: Bearer &lt;token&gt;</code>, además de manejar <code>429</code> leyendo la cabecera <code>Retry-After</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-cliente"> Ya lo estudié</label>
+</section>
+
+<section id="s-env" data-titulo="Variables de entorno">
+<h2><span class="num">4.3</span> Variables de entorno</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Una <strong>variable de entorno</strong> es un valor de configuración que vive fuera del código, en el sistema donde corre el programa. Se lee con <code>process.env.NOMBRE</code>. Sirven para lo que cambia entre ambientes (local, producción) o lo que es secreto (claves). En Next.js se escriben en <code>.env.local</code> (local, <strong>no se sube a Git</strong>) y en la configuración del hospedaje (Vercel → Settings → Environment Variables).</p>
+<p>Solo las que empiezan por <code>NEXT_PUBLIC_</code> llegan al navegador. Las demás existen solo en el servidor.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es como la dirección de entrega de un paquete escrita en una etiqueta aparte y no impresa en la caja. La misma caja (el código) se puede mandar a distintas direcciones (local, Vercel) cambiando solo la etiqueta.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p><code>.env.example</code> (sí está en Git, como plantilla):</p>
+<pre><code>API_URL=https://yanethm-cromoverso-api.fly.dev/api/v1
+# API_SIMULAR_LATENCIA=2000
+# API_SIMULAR_ERROR=503</code></pre>
+<p>Para correrlo: copiar <code>.env.example</code> como <code>.env.local</code>. En <code>.gitignore</code> están ignorados los <code>.env*</code> pero hay una excepción <code>!.env.example</code>. En Vercel se configuró <code>API_URL</code> en el panel del proyecto. Si falta, <code>direccionBase()</code> lanza un error claro que dice qué revisar.</p>
+<p>¿Por qué <code>API_URL</code> y no <code>NEXT_PUBLIC_API_URL</code>? Porque nadie en el navegador necesita la dirección: todas las peticiones salen del servidor de Next.js.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Lo mismo con su propia dirección (<code>https://yanethm-taquilla-api.fly.dev/api/v1</code>). Revisa cómo la llamó tu compañero en su <code>.env.example</code> y en Vercel.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-env"> Ya lo estudié</label>
+</section>
+
+<section id="s-resiliencia" data-titulo="Reintentos y simulación de fallas">
+<h2><span class="num">4.4</span> Reintentos y simulación de fallas</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p><strong>Resiliencia</strong> es que la aplicación aguante fallas sin caerse. Una técnica es <strong>reintentar</strong> las peticiones que fallan por causas pasajeras, esperando un poco más cada vez (<em>backoff</em>). Lo importante es reintentar solo lo que tiene sentido: un 5xx o un corte de red pueden ser momentáneos; un 404 o un 422 no van a cambiar por repetir.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Si llamas a alguien y da ocupado, esperas un momento y vuelves a llamar, y si vuelve a dar ocupado, esperas un poco más. Pero si te dicen «ese número no existe», no tiene sentido seguir marcando.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<pre><code>const ESPERAS_REINTENTO = [300, 900];   <span class="c">// ms antes del 1.er y 2.º reintento</span>
+
+function valeLaPenaReintentar(error: unknown) {
+  return !(error instanceof ErrorApi) || error.estado &gt;= 500;   <span class="c">// red caída o 5xx</span>
+}
+
+async function pedir&lt;T&gt;(ruta: string, segundosEnCache: number): Promise&lt;T&gt; {
+  for (let intento = 0; ; intento++) {
+    try {
+      return await pedirUnaVez&lt;T&gt;(ruta, segundosEnCache);
+    } catch (error) {
+      const espera = ESPERAS_REINTENTO[intento];
+      if (espera === undefined || !valeLaPenaReintentar(error)) throw error;
+      await new Promise((listo) =&gt; setTimeout(listo, espera));
+    }
+  }
+}</code></pre>
+<p>En total: hasta 3 intentos (1 + 2 reintentos), con esperas de 0,3 s y 0,9 s. Si todo falla, el error sube y lo atrapa <code>error.tsx</code> (o <code>global-error.tsx</code> si falló el layout).</p>
+<p>Otras protecciones (PR #10):</p>
+<ul>
+<li><code>obtenerIdiomasSiHay()</code>: si <code>GET /idiomas</code> falla, devuelve <code>null</code> y el selector se arma con <code>textos.idioma.opciones</code> (<code>idiomasDesdeTextos</code>). El idioma por defecto queda en <code>IDIOMA_DE_RESPALDO = "es"</code>.</li>
+<li><code>metadatosDePagina</code> devuelve <code>{}</code> si falla: la página se ve sin título personalizado, pero se ve.</li>
+<li><code>cromosDestacados()</code> del inicio devuelve <code>[]</code> si falla: la portada sale sin cartas destacadas.</li>
+<li><code>global-error.tsx</code> con respaldo bilingüe y botón de reintentar.</li>
+</ul>
+<h3>Cómo simular fallas para la demo</h3>
+<p>La API acepta dos cabeceras de prueba. El proyecto las envía solo si existen las variables en <code>.env.local</code>:</p>
+<div class="tabla"><table>
+<tr><th>Variable en <code>.env.local</code></th><th>Cabecera que se envía</th><th>Efecto</th></tr>
+<tr><td><code>API_SIMULAR_LATENCIA=2000</code></td><td><code>X-Simular-Latencia: 2000</code></td><td>Cada respuesta tarda 2 s → ves <code>loading.tsx</code></td></tr>
+<tr><td><code>API_SIMULAR_ERROR=503</code></td><td><code>X-Simular-Error: 503</code></td><td>La API responde 503 <code>falla_simulada</code> → ves el estado de error / global-error</td></tr>
+</table></div>
+<p>Después de cambiar <code>.env.local</code> hay que reiniciar <code>npm run dev</code>. Ojo: la caché de 60/300 s puede servir datos viejos; en desarrollo la caché se comporta distinto, pero si no ves el error, espera o reinicia.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Su API tiene las mismas cabeceras (<code>X-Simular-Latencia</code> hasta 15000 ms, <code>X-Simular-Error</code> con 500, 503 o 504 y código <code>falla_simulada</code>). Su contrato también pide: si no hay red, mostrar el error de conexión. Pregúntate (o pregúntale a tu compañero) si su proyecto reintenta y si tiene <code>global-error.tsx</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-resiliencia"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 5 · Las historias del Sprint 1</div>
+
+<section id="s-h1" data-titulo="S1-01 Proyecto y sistema de diseño">
+<h2><span class="num">5.1</span> US-CRO-S1-01 · Proyecto y sistema de diseño</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Un <strong>sistema de diseño</strong> es el conjunto de reglas y piezas que hacen que toda la interfaz se vea coherente: colores, tipografías, espacios, radios, sombras, iconos y componentes base. Los <strong>design tokens</strong> son esas decisiones guardadas como variables con nombre (<code>--marca-primario</code>, <code>--espacio-4</code>), exportadas desde Figma. La regla de oro: <strong>los componentes no escriben valores a mano</strong>, solo usan tokens.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es el manual de marca de una empresa: dice «nuestro morado es este, nuestros títulos usan esta letra, los bordes se redondean así». Cualquier diseñador o programador que siga el manual produce piezas que parecen de la misma familia.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<h3>Configuración del proyecto</h3>
+<ul>
+<li>Migración a Next.js con App Router y TypeScript (el repo de referencia de la profesora usaba Vite y JSX).</li>
+<li>TypeScript estricto, ESLint y Prettier (ver «Calidad»).</li>
+<li>Cliente de la API con la dirección en variable de entorno.</li>
+</ul>
+<h3>Tokens (<code>src/styles/tokens.css</code>)</h3>
+<p>Copiados del <code>tokens.css</code> oficial de los recursos de diseño, más medidas propias que el código necesitaba:</p>
+<div class="tabla"><table>
+<tr><th>Grupo</th><th>Ejemplos</th></tr>
+<tr><td>Colores de marca y fondo</td><td><code>--fondo-pagina: #fff8ec</code>, <code>--marca-primario: #6c3bff</code>, <code>--marca-acento: #ffd23f</code>, <code>--texto-principal: #1a1033</code></td></tr>
+<tr><td>Colores por mundo</td><td><code>--mundo-neon</code>, <code>--mundo-coral</code>, <code>--mundo-bosque</code>, <code>--mundo-forja</code>, <code>--mundo-orbita</code>, <code>--mundo-niebla</code> y su versión <code>-suave</code></td></tr>
+<tr><td>Colores por rareza</td><td><code>--rareza-comun</code>, <code>--rareza-rara</code>, <code>--rareza-epica</code>, <code>--rareza-legendaria</code></td></tr>
+<tr><td>Espacios</td><td><code>--espacio-1</code> a <code>--espacio-8</code> = 4, 8, 12, 16, 24, 32, 48, 64 px</td></tr>
+<tr><td>Radios y sombras</td><td><code>--radio-s/m/l/xl/pildora</code>, <code>--sombra-pop</code>, <code>--sombra-flotante</code>, <code>--brillo-legendaria</code></td></tr>
+<tr><td>Tipografía</td><td><code>--tipo-titular-h1: 700 40px / 46px var(--fuente-unbounded)</code>, <code>--tipo-cuerpo-m: 400 16px / 24px var(--fuente-rubik)</code>…</td></tr>
+<tr><td>Medidas propias</td><td><code>--alto-navbar: 76px</code>, <code>--alto-navbar-movil: 64px</code>, <code>--alto-control: 44px</code>, <code>--ancho-columna-filtros: 296px</code>, tamaños de icono, <code>--grosor-foco</code>, <code>--duracion-transicion</code></td></tr>
+</table></div>
+<p>Un truco que se usa mucho: el componente le pasa al CSS una variable con un dato de la API, y el CSS la usa. En <code>TarjetaMundo</code>: <code>{ "--color-mundo": mundo.color, "--fondo-mundo": `var(--mundo-${mundo.id}-suave, var(--fondo-superficie))` }</code>; en <code>InsigniaRareza</code>: <code>{ "--color-rareza": `var(--rareza-${rareza.id})` }</code>. Así no hay un <code>if</code> por mundo ni por rareza.</p>
+<h3>Iconos</h3>
+<p>49 iconos SVG oficiales en <code>public/iconos</code>, más cuatro creados para las figuras que no venían en el paquete (ola, hoja, órbita, runa), con el mismo estilo de trazo. El componente <code>Icono</code> no inserta el SVG: pinta un <code>span</code> del color del texto y usa el SVG como <strong>máscara</strong> (recorta la forma). Por eso todos los iconos toman el color del texto que los rodea (<code>currentColor</code>), y llevan <code>aria-hidden="true"</code> porque son decorativos.</p>
+<pre><code>.icono {
+  background-color: currentColor;
+  mask: var(--icono) center / contain no-repeat;
+}</code></pre>
+<h3>Componentes base (<code>components/ui</code>)</h3>
+<div class="tabla"><table>
+<tr><th>Componente</th><th>Variantes y estados</th></tr>
+<tr><td><code>Boton</code> / <code>BotonEnlace</code></td><td>primario, secundario, acento, inverso; tamaño normal y pequeño; hover, active, focus-visible, disabled. <code>BotonEnlace</code> es un enlace con aspecto de botón (navega, no ejecuta acción)</td></tr>
+<tr><td><code>Campo</code></td><td><code>label</code> conectada, texto de ayuda y error con <code>aria-describedby</code>, <code>aria-invalid</code></td></tr>
+<tr><td><code>Etiqueta</code></td><td>neutra, acento, marca, inversa</td></tr>
+<tr><td><code>Tarjeta</code></td><td>Con <code>href</code> se convierte en enlace interactivo</td></tr>
+<tr><td><code>SelectorIdioma</code></td><td>Grupo de botones con <code>aria-pressed</code> y <code>lang</code></td></tr>
+<tr><td><code>AvisoCookies</code></td><td>Sección con título y texto conectados por <code>aria-labelledby</code>/<code>aria-describedby</code></td></tr>
+<tr><td><code>Icono</code></td><td>pequeño, normal, grande</td></tr>
+</table></div></div>
+<div class="caja ojo"><span class="chip">Un error que se corrigió</span>
+<p>Al principio los componentes usaban los tokens de color y espacio, pero tenían tamaños de letra y pesos escritos a mano (<code>font-size: 14px</code>). Eso incumplía el criterio de «sin valores a mano». Se crearon los tokens <code>--tipo-*</code> con los estilos de texto de Figma y se reemplazaron por <code>font: var(--tipo-...)</code>. Esto está en IA.md (caso 4).</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Su S1-01 sería equivalente: tokens de su Figma, sus iconos, los mismos componentes base. Lo propio de Taquilla serían tokens por categoría de evento y estados de disponibilidad (agotado, últimas entradas), y el componente de afiche con degradado.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-h1"> Ya lo estudié</label>
+</section>
+
+<section id="s-h2" data-titulo="S1-02 Navegación web y móvil">
+<h2><span class="num">5.2</span> US-CRO-S1-02 · Navegar por el sitio en web y móvil</h2>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<h3>Encabezado (<code>Encabezado.tsx</code>)</h3>
+<ul>
+<li><code>&lt;header&gt;</code> pegajoso (<code>position: sticky</code>) con la marca (logo que lleva al inicio, con <code>aria-label</code> desde los textos), la <code>&lt;nav&gt;</code> con Inicio y Mundos, el selector de idioma y los botones «Ingresar» y «Crear cuenta».</li>
+<li>El enlace de la página actual lleva <code>aria-current="page"</code> (lo calcula <code>estaActivo()</code>: Inicio solo en <code>/</code>; Mundos en <code>/mundos</code> y cualquier <code>/mundos/...</code>).</li>
+<li>Bajo 960 px (<code>max-width: 959px</code>) la nav se esconde y aparece el botón hamburguesa con <code>aria-expanded</code> (abierto o no) y <code>aria-controls="menu-movil"</code> (qué controla).</li>
+</ul>
+<h3>Menú móvil (<code>MenuMovil.tsx</code>)</h3>
+<ol class="flujo">
+<li>Cerrado tiene el atributo <code>hidden</code>: ni se ve ni lo alcanza el teclado ni el lector de pantalla.</li>
+<li>Al abrir: el foco pasa al primer enlace y se bloquea el scroll de la página.</li>
+<li><kbd>Tab</kbd> y <kbd>Shift</kbd>+<kbd>Tab</kbd> dan la vuelta dentro del menú y el botón (trampa de foco), para no perderse detrás.</li>
+<li><kbd>Escape</kbd> cierra y devuelve el foco al botón hamburguesa.</li>
+<li>Clic en un enlace cierra el menú; cambiar de ruta también lo cierra.</li>
+<li>El enlace actual muestra la etiqueta «Estás aquí» (<code>menuMovil.aria.estasAqui</code>), y abajo están el idioma y los botones de cuenta.</li>
+</ol>
+<pre><code>function alPresionar(evento: KeyboardEvent) {
+  if (evento.key === "Escape") { onCerrar({ devolverFoco: true }); return; }
+  if (evento.key !== "Tab") return;
+  const elementos = [boton, ...contenedor.querySelectorAll(ENFOCABLES)];
+  const primero = elementos[0], ultimo = elementos[elementos.length - 1];
+  if (evento.shiftKey &amp;&amp; document.activeElement === primero) { evento.preventDefault(); ultimo?.focus(); }
+  else if (!evento.shiftKey &amp;&amp; document.activeElement === ultimo) { evento.preventDefault(); primero?.focus(); }
+}</code></pre>
+<h3>Pie (<code>Pie.tsx</code>)</h3>
+<p><code>&lt;footer&gt;</code> con tres columnas, cada una con su <code>&lt;nav aria-labelledby&gt;</code> apuntando a su título. Los enlaces legales se muestran como texto (no hay páginas legales en el sprint, así que no se inventaron enlaces rotos). El año se pone con el marcador <code>{anio}</code> del texto de la API.</p>
+<h3>Rutas y estados</h3>
+<p>En esta historia se crearon las rutas <code>/</code>, <code>/mundos</code>, <code>/ingresar</code>, <code>/registro</code> y los estados <code>loading</code>, <code>error</code> y <code>not-found</code>, y el enlace «Saltar al contenido».</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>El contrato de Taquilla nombra las claves <code>navbar</code>, <code>menuMovil</code> y <code>footer</code> igual que Cromoverso, y además un botón y panel de <strong>accesibilidad</strong> (<code>accesibilidad</code>, <code>navbar.aria.accesibilidad</code>, <code>menuMovil.secciones.accesibilidad</code>). La lógica del menú (aria-expanded, foco, Escape, trampa de Tab) es la misma. Con sesión iniciada, la nav muestra el nombre de la persona y un menú de cuenta.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-h2"> Ya lo estudié</label>
+</section>
+
+<section id="s-h3" data-titulo="S1-03 Inicio público">
+<h2><span class="num">5.3</span> US-CRO-S1-03 · Inicio público</h2>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p><code>src/app/page.tsx</code> (servidor) pide en paralelo <code>GET /mundos</code>, <code>GET /rarezas</code> y los cromos destacados, y se los pasa a <code>VistaInicio</code>.</p>
+<pre><code>async function cromosDestacados(): Promise&lt;Cromo[]&gt; {
+  try {
+    const { datos } = await obtenerCromos({ rareza: "legendaria", porPagina: 20 });
+    return datos.filter((cromo) =&gt; cromo.holografico).slice(0, 3);
+  } catch {
+    return [];   <span class="c">// la portada se muestra sin ellos</span>
+  }
+}</code></pre>
+<h3>Qué tiene la vista</h3>
+<ul>
+<li><strong>Portada</strong>: <code>&lt;section aria-labelledby="titulo-inicio"&gt;</code> con el <code>h1</code> (<code>paginas.inicio.hero.titulo</code>), un subtítulo distinto en móvil (<code>subtituloMovil</code>), los botones «Crear cuenta gratis» (va a <code>/registro</code>, variante acento) y «Explorar mundos» (baja a <code>#mundos</code>), y un abanico de 3 cartas holográficas con la etiqueta «guardiana».</li>
+<li><strong>Mundos</strong>: <code>h2</code>, subtítulo, enlace «Ver {mundo}» al primer mundo, y una <strong>leyenda de rarezas</strong> con icono, nombre y porcentaje (<code>general.formatos.porcentaje</code>). Esta leyenda no estaba en Figma, pero la pide el primer criterio de la historia.</li>
+<li><strong>Rejilla de 6 mundos</strong> con <code>TarjetaMundo</code>: fondo <code>var(--mundo-{id}-suave)</code>, etiqueta «Mundo N», «20 cromos». 3 columnas en tablet y carrusel horizontal con <code>scroll-snap</code> en móvil.</li>
+</ul>
+<p>Todos los textos salen de <code>paginas.inicio.*</code> y todos los datos de la API: si la profesora cambia un mundo en la API, el inicio cambia sin tocar código.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Su inicio usa <code>GET /eventos/destacados</code> (eventos de la portada) y <code>GET /categorias</code> (con cuántos eventos tiene cada una). Cada tarjeta de evento enlaza a <code>/eventos/{slug}</code>, pinta el afiche con el degradado <code>color1 → color2</code>, muestra fecha (hora de Bogotá), recinto y ciudad, «desde $75.000» y la disponibilidad.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-h3"> Ya lo estudié</label>
+</section>
+
+<section id="s-h4" data-titulo="S1-04 Catálogo de un mundo">
+<h2><span class="num">5.4</span> US-CRO-S1-04 · Catálogo de un mundo</h2>
+<div class="caja concepto"><span class="chip">Concepto: estado en la URL</span>
+<p>Los filtros podrían guardarse en <code>useState</code>, pero se perderían al recargar, no se podrían compartir por enlace y el botón «Atrás» no funcionaría. Si los filtros viven <strong>en la URL</strong> (<code>?rareza=legendaria&amp;tipo=heroe</code>), la URL es la fuente de verdad: recargar, compartir y volver atrás funcionan solos, y el servidor puede pintar la página ya filtrada.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es la diferencia entre decirle a alguien «busca en la biblioteca, ya te dije qué» (se olvida) y darle una ficha escrita: «Sección Neón, solo legendarias, solo héroes». La ficha se puede fotocopiar y entregar a otra persona, y lleva al mismo estante.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<h3>Leer y validar (<code>src/lib/filtros.ts</code>)</h3>
+<pre><code>export function leerFiltros(parametros: Parametros, rarezas: Rareza[]): Filtros {
+  const rareza = primero(parametros.rareza);
+  const tipo = primero(parametros.tipo);
+  return {
+    rareza: rarezas.some((opcion) =&gt; opcion.id === rareza) ? rareza : undefined,
+    tipo: TIPOS_DE_CROMO.find((opcion) =&gt; opcion === tipo),
+  };
+}</code></pre>
+<p>Si alguien escribe <code>?rareza=inventada</code>, el valor no está en <code>GET /rarezas</code>, se ignora y se muestran todos los cromos. Sin esta validación, la API respondería <strong>422</strong> y la página mostraría un error. <code>primero()</code> existe porque un parámetro repetido (<code>?tipo=a&amp;tipo=b</code>) llega como lista.</p>
+<h3>Escribir la URL (<code>enlaceConFiltros</code>)</h3>
+<p>Cada opción de filtro es un <strong>enlace</strong> (<code>&lt;Link&gt;</code>) a la misma página con otra URL: <code>enlaceConFiltros(mundo.id, { ...filtros, rareza: "epica" })</code>. Los valores vacíos no se escriben. La opción activa lleva <code>aria-current="true"</code>.</p>
+<h3>Qué tiene la vista</h3>
+<ul>
+<li><strong>Cabecera del color del mundo</strong>: migas de pan (Inicio › Mundo, con <code>aria-current="page"</code> en el último), botón volver en móvil, <code>h1</code> con el nombre, tema y rango de números.</li>
+<li><strong>Columna <code>&lt;aside&gt;</code></strong> con 3 paneles: «Mundos» (los 6, el actual con «Página actual»), «Filtrar por rareza» y «Filtrar por tipo» (cada uno con «todas/todos» y conteos).</li>
+<li><strong>Álbum</strong>: el título con el conteo de resultados tiene <code>aria-live="polite"</code> (el lector de pantalla anuncia «5 cromos» al filtrar), «Orden: número», estado vacío con botón «Quitar filtros», y la rejilla de <code>TarjetaCromo</code>: 5 columnas en web, 4 bajo 1200 px, 3 bajo 960 px.</li>
+<li><strong>Móvil</strong>: la columna de filtros se cambia por <code>FiltrosMovil</code>, dos <code>&lt;select&gt;</code> que al cambiar hacen <code>router.push(enlaceConFiltros(...), { scroll: false })</code>.</li>
+<li><strong>Tarjeta de cromo</strong>: número con 3 cifras (<code>String(n).padStart(3, "0")</code> → <code>007</code>), ilustración SVG con el color del cromo, brillo holográfico, insignia de rareza (icono + palabra, no solo color), tipo traducido desde los textos.</li>
+</ul>
+<h3>Un mundo que no existe</h3>
+<pre><code>async function mundoONoEncontrado(id: string) {
+  try { return await obtenerMundo(id); }
+  catch (error) {
+    if (error instanceof ErrorApi &amp;&amp; error.estado === 404) notFound();
+    throw error;   <span class="c">// otro error → error.tsx</span>
+  }
+}</code></pre></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Explorar es el equivalente directo, con más filtros: <code>categoria</code> (validable contra <code>GET /categorias</code>), <code>ciudad</code> (contra <code>GET /ciudades</code>), <code>q</code> (búsqueda libre, no se valida contra una lista), <code>orden</code> (<code>fecha</code>, <code>precio</code> o <code>popularidad</code>) y <code>pagina</code>. Su contrato lo dice textualmente: «Guárdalos en la URL de tu página para que no se pierdan al recargar». Y como hay paginación (<code>paginacion.paginas</code>), aparecen enlaces «Anterior/Siguiente» que solo cambian <code>?pagina=</code>. Sin resultados → 200 con <code>datos: []</code> → estado vacío.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-h4"> Ya lo estudié</label>
+</section>
+
+<section id="s-h5" data-titulo="S1-05 Idioma ES | EN">
+<h2><span class="num">5.5</span> US-CRO-S1-05 · Cambiar el idioma entre español e inglés</h2>
+<div class="caja concepto"><span class="chip">Concepto: internacionalización (i18n)</span>
+<p><strong>i18n</strong> (i + 18 letras + n) es preparar una aplicación para varios idiomas. La regla del curso: <strong>ningún texto va escrito en los componentes</strong>; todos vienen de <code>GET /textos?idioma=es|en</code> como un objeto anidado, y cada componente pide el suyo por su ruta (<code>"navbar.enlaces.inicio"</code>).</p>
+<p>Dos detalles: los <strong>marcadores</strong> (<code>"Ver {mundo}"</code> se rellena con el nombre) y los <strong>plurales</strong> (<code>{ uno: "1 cromo", otro: "{cantidad} cromos" }</code>).</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es como un teatro con subtítulos: la obra (los componentes) es la misma; lo que cambia es el rollo de subtítulos que se proyecta. Cambiar de idioma es cambiar de rollo, no reescribir la obra.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<h3>Buscar, rellenar y traducir (<code>src/lib/textos.ts</code>)</h3>
+<pre><code>buscarTexto(textos, "navbar.enlaces.inicio")   <span class="c">// recorre textos.navbar.enlaces.inicio</span>
+rellenar("Ver {mundo}", { mundo: "Neón" })      <span class="c">// "Ver Neón"</span>
+traducir(textos, "paginas.inicio.mundos.etiquetas.cromos", { cantidad: 20 })   <span class="c">// "20 cromos"</span>
+<span class="c">// si el texto es { uno, otro }: cantidad === 1 → uno; si no → otro</span>
+<span class="c">// si la ruta no existe, devuelve la ruta misma, para notar el faltante al revisar</span></code></pre>
+<h3>El flujo completo</h3>
+<ol class="flujo">
+<li><strong>Primera carga (servidor)</strong>: <code>layout.tsx</code> decide el idioma así: <code>preferencias.idioma ?? idiomas?.predeterminado ?? "es"</code> (la cookie, si aceptó cookies; si no, el predeterminado de la API; si no, español). Pide los textos y pone <code>&lt;html lang={idioma}&gt;</code>.</li>
+<li><strong>Clic en EN</strong>: <code>Idioma.tsx</code> llama <code>cambiarIdioma("en")</code> del contexto.</li>
+<li><code>useTransition</code> marca <code>cambiandoIdioma = true</code>: el contenedor del selector lleva <code>aria-busy</code> y no se aceptan más clics hasta que termine.</li>
+<li>La Server Action <code>cargarTextos("en")</code> trae los textos en inglés.</li>
+<li>El contexto actualiza <code>textos</code> e <code>idioma</code>: todos los componentes que usan <code>t()</code> se vuelven a pintar en inglés, sin recargar la página.</li>
+<li>Un <code>useEffect</code> pone <code>document.documentElement.lang = "en"</code> y <code>useTituloDePagina</code> cambia el título de la pestaña.</li>
+<li>Si la persona aceptó cookies, se guarda la cookie <code>idioma=en</code>. Al volver mañana, el servidor la lee y la página llega directamente en inglés.</li>
+<li>Si la Server Action falla, <code>errorIdioma = true</code> y <code>Idioma.tsx</code> muestra el mensaje <code>errores.generico</code>; el idioma no cambia.</li>
+</ol>
+<h3>El selector</h3>
+<p><code>SelectorIdioma</code> es un <code>role="group"</code> con etiqueta, y cada botón tiene <code>aria-pressed</code> (cuál está activo), <code>lang</code> (para que «English» se pronuncie en inglés) y <code>aria-label</code> con el nombre completo («Español», «English») aunque se vea «ES»/«EN».</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>El contrato de Taquilla describe exactamente lo mismo: «Ningún texto va escrito dentro de tus componentes: se piden a la API», con <code>GET /idiomas</code> y <code>GET /textos</code>, y <code>?idioma=fr</code> → 400 <code>idioma_no_soportado</code> (usar <code>es</code>). Las claves: <code>navbar</code>, <code>menuMovil</code>, <code>footer</code>, <code>paginas.inicio</code>, <code>paginas.explorar</code>, <code>paginas.detalleEvento</code>, <code>paginas.ingresar</code>, <code>paginas.registro</code>, <code>estados</code>, <code>formularios</code>, <code>errores</code>, <code>cookies.banner</code>, <code>idioma</code>. Un extra: en Taquilla al cambiar de idioma también cambia el formato de fechas y precios.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-h5"> Ya lo estudié</label>
+</section>
+
+<section id="s-h6" data-titulo="S1-06 Cookies">
+<h2><span class="num">5.6</span> US-CRO-S1-06 · Aceptar o rechazar las cookies</h2>
+<div class="caja concepto"><span class="chip">Concepto: consentimiento</span>
+<p>Las leyes de protección de datos piden que el sitio <strong>pregunte antes</strong> de guardar cookies que no son estrictamente necesarias, y que aceptar y rechazar sean igual de fáciles. Rechazar no puede romper el sitio: solo significa que no se recuerdan las preferencias.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es el hotel que te pregunta en recepción: «¿Quiere que recordemos sus preferencias para la próxima visita?». Si dices que no, igual te dan la habitación; solo que la próxima vez te vuelven a preguntar qué almohada quieres. Y anotar que dijiste que no sí lo pueden hacer, para no preguntarte en cada pasillo.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<div class="tabla"><table>
+<tr><th>Cookie</th><th>Valores</th><th>Cuándo se guarda</th></tr>
+<tr><td><code>consentimiento</code></td><td><code>aceptado</code> / <code>rechazado</code></td><td>Siempre que la persona decide (es necesaria para no volver a preguntar)</td></tr>
+<tr><td><code>idioma</code></td><td><code>es</code> / <code>en</code></td><td>Solo si aceptó. Si rechaza, se borra</td></tr>
+</table></div>
+<p>Ambas con <code>Path=/</code>, <code>Max-Age</code> de 180 días, <code>SameSite=Lax</code> y <code>Secure</code> en HTTPS (<code>src/lib/cookies.ts</code>):</p>
+<pre><code>export function guardarCookie(nombre: string, valor: string) {
+  const segura = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${nombre}=${encodeURIComponent(valor)}; Path=/; Max-Age=${DURACION}; SameSite=Lax${segura}`;
+}
+export function borrarCookie(nombre: string) {
+  document.cookie = `${nombre}=; Path=/; Max-Age=0; SameSite=Lax`;   <span class="c">// Max-Age=0 = borrar</span>
+}</code></pre>
+<h3>Leerlas en el servidor (sin parpadeo)</h3>
+<pre><code>export async function leerPreferencias() {
+  const almacen = await cookies();
+  const consentimiento = almacen.get("consentimiento")?.value;
+  const idioma = almacen.get("idioma")?.value;
+  const valido = esConsentimiento(consentimiento) ? consentimiento : null;
+  return {
+    consentimiento: valido,
+    idioma: valido === "aceptado" &amp;&amp; esIdioma(idioma) ? idioma : null,   <span class="c">// sin consentimiento, el idioma no cuenta</span>
+  };
+}</code></pre>
+<p>Si se leyeran solo en el navegador, la página llegaría con el aviso visible y luego desaparecería (parpadeo), o en español y luego cambiaría a inglés. Leyéndolas en el servidor, el HTML llega ya correcto.</p>
+<h3>El aviso</h3>
+<ul>
+<li><code>GestorCookies</code> lo muestra solo si <code>consentimiento === null</code> (nunca ha decidido).</li>
+<li>«Rechazar» y «Aceptar» tienen <strong>la misma variante y el mismo ancho</strong> (rejilla <code>1fr 1fr</code>), para que ninguna opción pese más. En Figma «Aceptar» venía relleno y «Rechazar» con borde; se cambió para cumplir el segundo criterio de la historia (decisión documentada en IA.md).</li>
+<li>Al decidir, el aviso desaparece y el foco pasa a <code>#contenido</code>, para que quien navega con teclado no quede «en el aire».</li>
+<li>Es una <code>&lt;section&gt;</code> con <code>aria-labelledby</code> (título) y <code>aria-describedby</code> (texto), con ids de <code>useId()</code>.</li>
+</ul>
+<h3>Los cuatro casos para la demo</h3>
+<ol>
+<li>Primera visita: aparece el aviso.</li>
+<li>Rechazar → el aviso no vuelve; cambias a EN; recargas → vuelve a ES (no se recordó el idioma).</li>
+<li>Aceptar → cambias a EN; recargas → sigue en EN.</li>
+<li>Para repetir: borrar las cookies del sitio (DevTools → Application → Cookies) o usar ventana de incógnito.</li>
+</ol></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Mismas cookies <code>consentimiento</code> e <code>idioma</code> con las mismas reglas, y textos en <code>cookies.banner</code>. Diferencia: en Taquilla existe una tercera cookie, <code>sesion</code>, que pone <strong>la API</strong> (httpOnly, 12 horas) al ingresar. Esa es estrictamente necesaria para la sesión, no depende del consentimiento de preferencias.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-h6"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 6 · Temas transversales</div>
+
+<section id="s-a11y" data-titulo="Accesibilidad">
+<h2><span class="num">6.1</span> Accesibilidad</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p><strong>Accesibilidad</strong> (a11y) es que cualquier persona pueda usar el sitio: con lector de pantalla, solo con teclado, con baja visión, con daltonismo o con sensibilidad al movimiento. La guía de referencia es <strong>WCAG</strong> (pautas de accesibilidad web). Los atributos <strong>ARIA</strong> (<code>aria-*</code>) agregan información para las tecnologías de asistencia cuando el HTML solo no alcanza. Regla de oro: primero HTML semántico; ARIA solo para lo que falta.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Un edificio accesible tiene rampa, ascensor con braille y señales claras. No estorban a quien sube por las escaleras, pero sin ellas mucha gente no puede entrar. El HTML semántico es la estructura del edificio; ARIA son los letreros en braille que explican lo que la vista no dice.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso: lista completa</span>
+<div class="tabla"><table>
+<tr><th>Técnica</th><th>Dónde</th><th>Para qué</th></tr>
+<tr><td>Enlace «Saltar al contenido»</td><td><code>SaltarAlContenido</code>, primer elemento del <code>body</code></td><td>Con <kbd>Tab</kbd> aparece; lleva a <code>#contenido</code> sin recorrer toda la navegación</td></tr>
+<tr><td><code>&lt;main id="contenido" tabIndex={-1}&gt;</code></td><td><code>layout.tsx</code></td><td><code>tabIndex={-1}</code> permite enfocarlo por código (al saltar o al cerrar el aviso de cookies) sin meterlo en el orden de <kbd>Tab</kbd></td></tr>
+<tr><td><code>lang</code> dinámico</td><td><code>&lt;html&gt;</code> y botones del selector</td><td>Pronunciación correcta</td></tr>
+<tr><td>Un <code>h1</code> por vista y niveles en orden</td><td>Todas las vistas</td><td>Navegar por títulos con el lector</td></tr>
+<tr><td><code>aria-current="page"</code></td><td>Enlaces de nav, menú, panel Mundos, migas</td><td>Anuncia «página actual»</td></tr>
+<tr><td><code>aria-current="true"</code></td><td>Filtro activo</td><td>Anuncia cuál opción está elegida</td></tr>
+<tr><td><code>aria-expanded</code> + <code>aria-controls</code></td><td>Botón hamburguesa</td><td>Anuncia «menú, contraído/expandido» y qué controla</td></tr>
+<tr><td><code>aria-pressed</code></td><td>Botones ES | EN</td><td>Anuncia cuál está activo (botón conmutable)</td></tr>
+<tr><td><code>aria-busy</code></td><td>Selector de idioma mientras carga</td><td>Indica que esa zona se está actualizando</td></tr>
+<tr><td><code>role="alert"</code></td><td>Error de idioma, <code>error.tsx</code></td><td>Se anuncia de inmediato</td></tr>
+<tr><td><code>aria-live="polite"</code></td><td>Conteo de resultados del catálogo</td><td>Anuncia el nuevo conteo al filtrar, sin interrumpir</td></tr>
+<tr><td><code>aria-labelledby</code> / <code>aria-describedby</code></td><td>Secciones, paneles, aviso de cookies, campos</td><td>Conectar un elemento con su título o descripción</td></tr>
+<tr><td><code>aria-hidden="true"</code></td><td>Iconos decorativos</td><td>Que el lector no lea «imagen» sin sentido</td></tr>
+<tr><td>Clase <code>.solo-lectores</code></td><td><code>globals.css</code>; labels de los selects en móvil</td><td>Texto invisible en pantalla pero leído por el lector</td></tr>
+<tr><td>Foco visible</td><td><code>:focus-visible</code> en <code>globals.css</code> con <code>--grosor-foco</code></td><td>Ver dónde está el teclado. <code>focus-visible</code> solo aparece con teclado, no con clic</td></tr>
+<tr><td>Gestión del foco</td><td>Menú móvil, aviso de cookies</td><td>Mover y devolver el foco con lógica (abrir, Escape, cerrar)</td></tr>
+<tr><td><code>hidden</code> en el menú cerrado</td><td><code>MenuMovil</code></td><td>Que el teclado no entre a un menú invisible</td></tr>
+<tr><td><code>prefers-reduced-motion</code></td><td><code>globals.css</code></td><td>Quitar animaciones si la persona lo pidió en su sistema</td></tr>
+<tr><td>Rareza con icono + palabra</td><td><code>InsigniaRareza</code></td><td>No depender solo del color (daltonismo)</td></tr>
+<tr><td>Altura mínima de controles</td><td><code>--alto-control: 44px</code></td><td>Área táctil cómoda en móvil</td></tr>
+<tr><td><code>&lt;label&gt;</code> conectada a cada campo</td><td><code>Campo</code>, <code>FiltrosMovil</code></td><td>El lector dice qué es cada campo; clic en la label enfoca el campo</td></tr>
+</table></div>
+<h3>Cómo probarlo en la demo</h3>
+<ol>
+<li>Recarga y presiona <kbd>Tab</kbd>: aparece «Saltar al contenido». <kbd>Enter</kbd> lo usa.</li>
+<li>Recorre la navegación con <kbd>Tab</kbd>: cada elemento tiene un anillo de foco visible.</li>
+<li>En móvil (o ventana estrecha): enfoca la hamburguesa, <kbd>Enter</kbd>, recorre con <kbd>Tab</kbd> (da la vuelta), <kbd>Escape</kbd> (cierra y el foco vuelve al botón).</li>
+<li>Cambia a EN y muestra en DevTools que <code>&lt;html lang="en"&gt;</code>.</li>
+</ol></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Todo lo anterior aplica igual. Su contrato agrega un botón y un panel de accesibilidad propios (claves <code>accesibilidad</code>), que probablemente ofrece opciones como tamaño de letra o contraste; si tu compañero lo implementó, entiende qué guarda y cómo lo aplica (por ejemplo, una clase o un atributo en <code>&lt;html&gt;</code> que cambia variables CSS). En formularios, los errores de <code>campos</code> van junto a cada campo con <code>aria-invalid</code> y <code>aria-describedby</code>, y <code>credenciales_invalidas</code> se muestra como un solo mensaje sin decir cuál dato falló.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-a11y"> Ya lo estudié</label>
+</section>
+
+<section id="s-responsive" data-titulo="Diseño adaptable">
+<h2><span class="num">6.2</span> Diseño adaptable (responsive)</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Un diseño <strong>adaptable</strong> reorganiza el contenido según el ancho de la pantalla, en vez de tener sitios separados para web y móvil. Se logra con rejillas flexibles (<code>fr</code>, <code>%</code>), <code>flex-wrap</code> y media queries en <strong>puntos de quiebre</strong> (breakpoints). Además, <code>&lt;meta name="viewport"&gt;</code> (Next.js lo pone solo) le dice al móvil que no simule una pantalla de escritorio.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es agua que toma la forma del vaso: el mismo contenido, distinta forma según el recipiente. Los breakpoints son las marcas del vaso donde la forma cambia.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>Figma tiene dos tamaños: web (1440 px) y móvil (390 px). Los puntos de quiebre del código:</p>
+<div class="tabla"><table>
+<tr><th>Ancho</th><th>Qué cambia</th></tr>
+<tr><td>≥ 1200 px</td><td>Diseño web completo: rejilla de 5 cromos, 6 mundos en fila</td></tr>
+<tr><td>≤ 1199 px</td><td>Catálogo con 4 columnas; inicio con menos columnas</td></tr>
+<tr><td>≤ 959 px</td><td>Aparece la hamburguesa y el menú móvil; catálogo a 3 columnas; mundos del inicio en 3 columnas</td></tr>
+<tr><td>≤ 767 px</td><td>Móvil: filtros como <code>&lt;select&gt;</code>, mundos en carrusel con <code>scroll-snap</code>, pie en una columna, aviso de cookies apilado, márgenes de página menores</td></tr>
+</table></div>
+<p>Se verificó en el navegador desde 390 hasta 1440 px. En DevTools: <kbd>F12</kbd> → icono de dispositivo (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>) → elegir ancho.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Mismo enfoque, y probablemente los filtros de Explorar (categoría, ciudad, búsqueda, orden) se agrupan o colapsan en móvil. Revisa en su Figma qué cambia entre 1440 y 390.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-responsive"> Ya lo estudié</label>
+</section>
+
+<section id="s-calidad" data-titulo="ESLint, Prettier y typecheck">
+<h2><span class="num">6.3</span> ESLint, Prettier y typecheck</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<ul>
+<li><strong>ESLint</strong> (linter): revisa el código buscando errores probables y malas prácticas (variables sin usar, hooks mal usados). No cambia nada; avisa.</li>
+<li><strong>Prettier</strong> (formateador): reescribe el código con un formato uniforme (comillas, punto y coma, saltos de línea). Termina las discusiones de estilo.</li>
+<li><strong>TypeScript</strong> (<code>tsc</code>): revisa los tipos.</li>
+<li><strong><code>package.json</code></strong>: describe el proyecto, sus dependencias (las que necesita en producción) y devDependencies (solo para desarrollar), y los <strong>scripts</strong> (atajos que se corren con <code>npm run nombre</code>).</li>
+</ul></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Escribir un trabajo: ESLint es el profesor que marca «esta frase no tiene sentido»; Prettier es el formato automático de márgenes y fuentes; TypeScript es el corrector que dice «aquí pusiste una fecha donde iba un nombre».</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<div class="tabla"><table>
+<tr><th>Script</th><th>Comando real</th></tr>
+<tr><td><code>npm run dev</code></td><td><code>next dev</code></td></tr>
+<tr><td><code>npm run build</code></td><td><code>next build</code></td></tr>
+<tr><td><code>npm run start</code></td><td><code>next start</code></td></tr>
+<tr><td><code>npm run lint</code></td><td><code>eslint</code></td></tr>
+<tr><td><code>npm run format</code> / <code>format:check</code></td><td><code>prettier --write .</code> / <code>prettier --check .</code></td></tr>
+<tr><td><code>npm run typecheck</code></td><td><code>next typegen &amp;&amp; tsc --noEmit</code></td></tr>
+</table></div>
+<ul>
+<li><code>eslint.config.mjs</code>: reglas de Next.js (<code>core-web-vitals</code> y TypeScript) más <code>eslint-config-prettier</code>, que apaga las reglas de estilo que chocarían con Prettier. Ignora <code>.next</code>, <code>out</code>, <code>build</code> y <code>next-env.d.ts</code>.</li>
+<li><code>.prettierrc.json</code>: punto y coma, comillas dobles, coma final en todo, ancho de línea 90.</li>
+<li>Errores reales que atrapó ESLint en el sprint: una variable sin usar y la regla <code>react-hooks/set-state-in-effect</code> en <code>global-error.tsx</code>.</li>
+<li>Dependencias principales: <code>next 16.4.6</code>, <code>react</code> y <code>react-dom 19.3.0</code>. Nada más: ni librerías de componentes, ni de i18n, ni de estilos. Todo lo pedido se hizo con lo que trae Next.js, cumpliendo la indicación de no usar tecnología adelantada.</li>
+</ul></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Abre su <code>package.json</code> y revisa: qué versión de Next.js usa, qué scripts tiene y si agregó librerías. Si usa algo que Cromoverso no usa (por ejemplo una librería de formularios o de fechas), entiende para qué.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-calidad"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 7 · Equipo y producción</div>
+
+<section id="s-git" data-titulo="Git y GitHub: conceptos">
+<h2><span class="num">7.1</span> Git y GitHub: conceptos</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<ul>
+<li><strong>Git</strong>: programa de control de versiones. Guarda la historia del proyecto como una serie de fotos llamadas <strong>commits</strong>.</li>
+<li><strong>Repositorio</strong>: la carpeta del proyecto más su historia (la carpeta oculta <code>.git</code>).</li>
+<li><strong>Commit</strong>: una foto de los cambios, con un mensaje, autor, fecha y un identificador (hash, como <code>c530b5a</code>).</li>
+<li><strong>Staging</strong> (área de preparación): dónde eliges qué cambios entran en el próximo commit (<code>git add</code>).</li>
+<li><strong>Rama</strong> (branch): una línea de trabajo paralela. <code>main</code> es la principal; cada historia se hizo en su rama.</li>
+<li><strong>Merge</strong> (fusionar): unir los commits de una rama en otra.</li>
+<li><strong>Remoto</strong>: la copia del repositorio en otro lugar (GitHub), llamada <code>origin</code>. <code>push</code> sube, <code>pull</code> baja y fusiona, <code>fetch</code> solo baja.</li>
+<li><strong>GitHub</strong>: sitio que aloja repositorios y agrega herramientas de equipo, como los <strong>pull requests</strong> (PR): una solicitud para fusionar una rama en otra, con su descripción, revisión y comentarios.</li>
+</ul></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Git es como guardar partida en un videojuego: cada commit es un punto de guardado al que puedes volver. Una rama es jugar una partida alternativa sin arruinar la principal. Un merge es traer lo que lograste en la alterna a la principal. Un PR es pedirle al grupo «miren lo que hice en mi partida alterna, ¿lo traemos a la principal?».</p></div>
+<h3>Los tres lugares de un archivo</h3>
+<pre><code>Directorio de trabajo  --git add--&gt;  Staging  --git commit--&gt;  Repositorio local  --git push--&gt;  GitHub
+       (editas)                    (eliges)                  (guardas)                     (compartes)</code></pre>
+<h3>Commits convencionales</h3>
+<p>Un formato acordado para los mensajes: <code>tipo: descripción en imperativo</code>. Así la historia se lee fácil y se puede filtrar.</p>
+<div class="tabla"><table>
+<tr><th>Tipo</th><th>Cuándo</th><th>Ejemplo real del proyecto</th></tr>
+<tr><td><code>feat:</code></td><td>Funcionalidad nueva</td><td><code>feat: construir el catálogo de un mundo en /mundos/[id]</code></td></tr>
+<tr><td><code>fix:</code></td><td>Corrección de un error</td><td><code>fix: actualizar el título de la pestaña al cambiar de idioma</code></td></tr>
+<tr><td><code>chore:</code></td><td>Mantenimiento, configuración</td><td><code>chore: configurar Prettier, ESLint y TypeScript estricto</code></td></tr>
+<tr><td><code>docs:</code></td><td>Solo documentación</td><td><code>docs: agregar IA.md con el registro de uso de IA del sprint</code></td></tr>
+<tr><td><code>refactor:</code>, <code>style:</code>, <code>test:</code></td><td>Reorganizar sin cambiar comportamiento, formato, pruebas</td><td>(no se usaron en el sprint)</td></tr>
+</table></div>
+<p>Las ramas también siguen un patrón: <code>chore/s1-01-setup</code>, <code>feat/s1-04-catalogo</code>, <code>fix/resiliencia-api</code>, <code>docs/ia-y-despliegue</code>.</p>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Revisa su historia con <code>git log --oneline --graph --all</code> y su lista de PR en GitHub. Fíjate si usó ramas por historia y commits convencionales; si te preguntan por un commit suyo, debes poder decir qué cambió.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-git"> Ya lo estudié</label>
+</section>
+
+<section id="s-flujo" data-titulo="Cómo se trabajó con ramas y PR">
+<h2><span class="num">7.2</span> Cómo se trabajó con ramas y PR en Cromoverso</h2>
+<ol class="flujo">
+<li>Una rama por historia, cada una creada a partir de la anterior (<strong>ramas encadenadas</strong>), porque cada historia necesitaba el código de la anterior: S1-02 usa los componentes de S1-01, etc.</li>
+<li>Un PR por historia: #3 (S1-01) hacia <code>main</code>; #4 (S1-02) hacia la rama de S1-01; #5 hacia la de S1-02; y así hasta #8.</li>
+<li>Al fusionar, las ramas no se borraron. Por eso GitHub <strong>no</strong> cambió la base de los PR siguientes a <code>main</code>, y los PR #4 a #8 se fusionaron cada uno en su rama base, no en <code>main</code>. Resultado: <code>main</code> solo tenía S1-01.</li>
+<li>Se detectó revisando la historia de <code>main</code>, y se creó el <strong>PR #9 de integración</strong> desde <code>feat/s1-03-inicio</code> hacia <code>main</code>: después de fusionar el #8 en ella, esa rama ya contenía todas las historias. No trajo cambios nuevos, solo integró lo ya revisado.</li>
+<li>Luego #10 (<code>fix/resiliencia-api</code>), #11 y #12 (documentación), ya directamente hacia <code>main</code>.</li>
+</ol>
+<div class="caja ojo"><span class="chip">Esto es lo que va en IA.md como «respuesta equivocada»</span>
+<p>Claude Code afirmó que al fusionar el primer PR, GitHub cambiaría la base de los siguientes a <code>main</code> automáticamente. Eso <strong>solo pasa si se borra la rama base</strong> al fusionar. La lección: antes de fusionar, revisar a qué rama apunta el PR («base: main ← compare: feat/...»).</p></div>
+<h3>Protección de la rama y revisores</h3>
+<p>En GitHub se puede agregar a la profesora como colaboradora del repositorio (Settings → Collaborators). Agregarla <strong>no</strong> obliga a pedir su aprobación para fusionar; eso solo pasa si se configura una regla de protección de rama que exija revisiones.</p>
+<label class="marcar"><input type="checkbox" data-marca="s-flujo"> Ya lo estudié</label>
+</section>
+
+<section id="s-vercel" data-titulo="Despliegue en Vercel">
+<h2><span class="num">7.3</span> Despliegue en Vercel</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p><strong>Desplegar</strong> es publicar la aplicación en un servidor accesible desde internet. <strong>Vercel</strong> es la plataforma de los creadores de Next.js: se conecta a GitHub, y en cada push a <code>main</code> descarga el código, corre <code>npm install</code> y <code>npm run build</code>, y publica el resultado. Cada PR también recibe un despliegue de vista previa con su propia URL.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>GitHub es el taller donde guardas los planos; Vercel es la constructora que, cada vez que actualizas el plano principal, levanta la versión nueva del edificio y cambia el letrero de la entrada sin cerrar el edificio.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<ol>
+<li>Vercel → Add New Project → importar <code>Sperezz33/Cromoverso</code> desde GitHub. Detecta Next.js solo.</li>
+<li>Environment Variables: <code>API_URL = https://yanethm-cromoverso-api.fly.dev/api/v1</code>.</li>
+<li>Deploy. URL del proyecto: <code>https://cromoverso-sperezz33.vercel.app</code> (<code>cromoverso.vercel.app</code> ya era de otra persona).</li>
+<li>Settings → Deployment Protection: se desactivó «Vercel Authentication», que obligaba a iniciar sesión en Vercel para ver el sitio.</li>
+<li>Despliegue automático desde <code>main</code>. Por eso no se debe fusionar nada antes de la sustentación: un error en <code>main</code> se publica solo.</li>
+</ol>
+<p>El repositorio se renombró a <code>Cromoverso</code>; GitHub redirige la URL vieja y Vercel muestra el repositorio conectado con el nombre nuevo.</p></div>
+<div class="caja taquilla"><span class="chip">En Taquilla</span>
+<p>Mismo proceso con su propio proyecto en Vercel y su <code>API_URL</code> de Taquilla. Ten a mano su URL desplegada.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-vercel"> Ya lo estudié</label>
+</section>
+
+<section id="s-uptime" data-titulo="Monitoreo con UptimeRobot">
+<h2><span class="num">7.4</span> Monitoreo con UptimeRobot</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p>Un <strong>monitor de disponibilidad</strong> visita tu sitio cada cierto tiempo y te avisa si no responde. Revisa el código HTTP: si es 2xx/3xx, el sitio está <strong>Up</strong>; si falla o tarda demasiado, está <strong>Down</strong> y manda una alerta.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es un vigilante que cada 5 minutos toca la puerta de tu tienda. Si nadie abre, te llama al celular.</p></div>
+<div class="caja proyecto"><span class="chip">En Cromoverso</span>
+<p>Monitor HTTP(s) a <code>https://cromoverso-sperezz33.vercel.app</code>, cada 5 minutos, con alertas por correo. La profesora pidió mostrarlo en estado «Up» al final de la sustentación. Además ella tiene un bot que revisa el sitio cada 2 horas. Lo que hace que el sitio aguante: Vercel sirve la página y, si la API de Fly.io está dormida o falla, la caché y los reintentos evitan que la página caiga.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-uptime"> Ya lo estudié</label>
+</section>
+
+<section id="s-ia" data-titulo="IA.md y uso de IA">
+<h2><span class="num">7.5</span> IA.md y uso de IA</h2>
+<p>El curso pide documentar el uso de herramientas de IA. Tu <code>IA.md</code> está escrito en primera persona y tiene:</p>
+<ul>
+<li>Introducción: Claude Code como herramienta de apoyo, y la responsabilidad del alcance y la validación en ti.</li>
+<li>Cinco casos con fecha, problema, corrección y validación: (1) análisis de requisitos y referencias (Vite/JSX vs Next.js/TS, <code>edicion=album</code>, 422); (2) integración en GitHub, con <strong>la respuesta equivocada de la IA</strong> sobre la base de los PR encadenados; (3) tratamiento de errores (PR #10); (4) tipografía con tokens; (5) despliegue en Vercel y UptimeRobot.</li>
+<li>Decisiones propias: botones de cookies con igual peso, leyenda de rarezas, iconos de ola, hoja, órbita y runa.</li>
+</ul>
+<div class="caja ojo"><span class="chip">Para la sustentación</span>
+<p>Si te preguntan por la IA, sé directo: qué hizo la herramienta, qué revisaste tú y cómo comprobaste que funcionaba. La mejor defensa es explicar el código con tus palabras, cosa que esta guía prepara. Lee IA.md completo antes de entrar, porque es tu documento y te pueden preguntar por cualquier caso.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-ia"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 8 · Para la sustentación</div>
+
+<section id="s-archivos" data-titulo="Recorrido archivo por archivo">
+<h2><span class="num">8.1</span> Recorrido archivo por archivo</h2>
+<p>Para cada archivo: qué es y una frase que puedes decir si te lo señalan.</p>
+<h3>Raíz del proyecto</h3>
+<div class="tabla"><table>
+<tr><th>Archivo</th><th>Qué es</th></tr>
+<tr><td><code>package.json</code></td><td>Nombre, dependencias (next, react, react-dom) y scripts</td></tr>
+<tr><td><code>package-lock.json</code></td><td>Versiones exactas instaladas, para que todos instalen lo mismo</td></tr>
+<tr><td><code>tsconfig.json</code></td><td>TypeScript estricto y alias <code>@/</code></td></tr>
+<tr><td><code>eslint.config.mjs</code>, <code>.prettierrc.json</code>, <code>.prettierignore</code></td><td>Reglas de calidad y formato</td></tr>
+<tr><td><code>next.config.ts</code></td><td>Configuración de Next.js (se quitaron opciones experimentales que traía la plantilla)</td></tr>
+<tr><td><code>.env.example</code></td><td>Plantilla de variables de entorno (<code>API_URL</code> y las de simulación)</td></tr>
+<tr><td><code>.gitignore</code></td><td>Lo que Git no guarda: <code>node_modules</code>, <code>.next</code>, <code>.env*</code> (salvo <code>.env.example</code>)</td></tr>
+<tr><td><code>README.md</code>, <code>IA.md</code></td><td>Documentación: cómo ejecutar, organización, enlaces; registro de uso de IA</td></tr>
+<tr><td><code>public/iconos</code>, <code>public/logos</code></td><td>Archivos estáticos servidos tal cual: 53 iconos SVG y los dos logos</td></tr>
+</table></div>
+<h3><code>src/app</code> (rutas)</h3>
+<div class="tabla"><table>
+<tr><th>Archivo</th><th>Tipo</th><th>Qué hace</th></tr>
+<tr><td><code>layout.tsx</code></td><td>Servidor</td><td>Lee cookies, decide idioma, pide textos, arma html/body, provider, header, main, footer</td></tr>
+<tr><td><code>page.tsx</code></td><td>Servidor</td><td>Inicio: mundos, rarezas y destacados en paralelo → <code>VistaInicio</code></td></tr>
+<tr><td><code>mundos/page.tsx</code></td><td>Servidor</td><td>Redirige al primer mundo</td></tr>
+<tr><td><code>mundos/[id]/page.tsx</code></td><td>Servidor</td><td>Catálogo: mundo (o 404), mundos, rarezas, filtros, cromos → <code>VistaCatalogo</code></td></tr>
+<tr><td><code>ingresar/page.tsx</code>, <code>registro/page.tsx</code></td><td>Servidor</td><td>Solo la presentación (<code>VistaCuenta</code>); los formularios son de sprints siguientes</td></tr>
+<tr><td><code>loading.tsx</code></td><td>Cliente</td><td>Estado de carga (usa <code>t()</code> del contexto, por eso es de cliente)</td></tr>
+<tr><td><code>error.tsx</code></td><td>Cliente</td><td>Estado de error con «Reintentar»</td></tr>
+<tr><td><code>not-found.tsx</code></td><td>Cliente</td><td>No encontrado con «Ir al inicio»</td></tr>
+<tr><td><code>global-error.tsx</code> + <code>.module.css</code></td><td>Cliente</td><td>Error del layout, con su propio html/body y respaldo bilingüe</td></tr>
+<tr><td><code>acciones.ts</code></td><td>Server Action</td><td><code>cargarTextos(idioma)</code></td></tr>
+<tr><td><code>globals.css</code></td><td>CSS</td><td>Reset, body, foco, <code>.contenedor</code>, <code>.solo-lectores</code>, movimiento reducido</td></tr>
+</table></div>
+<h3><code>src/lib</code> (lógica sin interfaz)</h3>
+<div class="tabla"><table>
+<tr><th>Archivo</th><th>Qué hace</th></tr>
+<tr><td><code>api.ts</code></td><td>Cliente de la API: <code>ErrorApi</code>, caché, reintentos, una función por endpoint</td></tr>
+<tr><td><code>tipos.ts</code></td><td>Tipos de los datos de la API</td></tr>
+<tr><td><code>textos.ts</code></td><td><code>buscarTexto</code>, <code>rellenar</code>, <code>traducir</code> (marcadores y plurales)</td></tr>
+<tr><td><code>cookies.ts</code></td><td>Nombres, validadores, <code>guardarCookie</code>, <code>borrarCookie</code> (navegador)</td></tr>
+<tr><td><code>preferencias-servidor.ts</code></td><td><code>leerPreferencias()</code> con <code>await cookies()</code> (servidor)</td></tr>
+<tr><td><code>idiomas.ts</code></td><td>Idioma de respaldo y lista de idiomas de respaldo</td></tr>
+<tr><td><code>seo.ts</code></td><td>Metadatos de cada vista desde los textos</td></tr>
+<tr><td><code>rutas.ts</code></td><td>Todas las rutas en un lugar, enlaces principales, <code>estaActivo()</code></td></tr>
+<tr><td><code>filtros.ts</code></td><td><code>leerFiltros</code> (validar la URL) y <code>enlaceConFiltros</code> (escribir la URL)</td></tr>
+</table></div>
+<h3>Otros</h3>
+<div class="tabla"><table>
+<tr><th>Archivo</th><th>Qué hace</th></tr>
+<tr><td><code>src/contexto/Preferencias.tsx</code></td><td>Provider y hook <code>usePreferencias()</code>: idioma, textos, <code>t()</code>, cookies</td></tr>
+<tr><td><code>src/hooks/useTituloDePagina.ts</code></td><td>Título de la pestaña en el idioma actual</td></tr>
+<tr><td><code>src/styles/tokens.css</code></td><td>Todos los tokens del diseño</td></tr>
+<tr><td><code>src/styles/fuentes.ts</code>, <code>fuentes.css</code></td><td>Unbounded y Rubik con <code>next/font</code>, conectadas a los tokens</td></tr>
+<tr><td><code>src/components/**</code></td><td>Ver «Componentes, JSX y props»</td></tr>
+</table></div>
+<label class="marcar"><input type="checkbox" data-marca="s-archivos"> Ya lo estudié</label>
+</section>
+
+<section id="s-taquilla" data-titulo="Cromoverso vs Taquilla">
+<h2><span class="num">8.2</span> Cromoverso frente a Taquilla</h2>
+<p>Los dos proyectos son de la misma familia: la misma profesora, la misma forma de API y las mismas reglas de idioma y cookies. Si entiendes Cromoverso, entiendes el 80 % de Taquilla. Esta tabla es tu traductor. Lo que dice de Taquilla sale de su contrato; cómo lo implementó tu compañero debes confirmarlo en su repositorio.</p>
+<div class="tabla"><table>
+<tr><th>Tema</th><th>Cromoverso</th><th>Taquilla</th></tr>
+<tr><td>Qué es</td><td>Álbum de cromos de héroes</td><td>Venta de entradas a eventos</td></tr>
+<tr><td>API</td><td><code>yanethm-cromoverso-api.fly.dev/api/v1</code></td><td><code>yanethm-taquilla-api.fly.dev/api/v1</code></td></tr>
+<tr><td>Recurso principal</td><td>Mundo (6) con 20 cromos</td><td>Evento (con funciones y localidades)</td></tr>
+<tr><td>Identificador en la URL</td><td><code>id</code>: <code>/mundos/neon</code></td><td><code>slug</code>: <code>/eventos/noche-de-salsa-brava</code></td></tr>
+<tr><td>Vista 1</td><td>Inicio: <code>/mundos</code>, <code>/rarezas</code>, destacados</td><td>Inicio: <code>/eventos/destacados</code>, <code>/categorias</code></td></tr>
+<tr><td>Vista 2</td><td>Catálogo de un mundo con filtros rareza y tipo</td><td>Explorar con filtros categoría, ciudad, búsqueda, orden y paginación</td></tr>
+<tr><td>Validar filtros</td><td>Contra <code>/rarezas</code> y <code>TIPOS_DE_CROMO</code> (evitar 422)</td><td>Contra <code>/categorias</code>, <code>/ciudades</code> y la lista de órdenes</td></tr>
+<tr><td>Sin resultados</td><td>Estado vacío con «Quitar filtros»</td><td>200 con <code>datos: []</code> → estado vacío</td></tr>
+<tr><td>404</td><td>Mundo inexistente → <code>notFound()</code></td><td>Slug inexistente → <code>notFound()</code></td></tr>
+<tr><td>Imagen</td><td>Ilustración SVG con <code>colorBase</code></td><td>Afiche con degradado <code>color1 → color2</code> y patrón</td></tr>
+<tr><td>Formatos</td><td>Número con 3 cifras, porcentajes</td><td>Fechas UTC → hora de Bogotá; precios enteros en COP</td></tr>
+<tr><td>Textos</td><td><code>GET /textos</code>; <code>navbar</code>, <code>menuMovil</code>, <code>paginas.*</code>, <code>estados</code>, <code>cookies.banner</code>…</td><td>Igual, más <code>formularios</code>, <code>errores</code>, <code>accesibilidad</code>; acepta <code>&amp;seccion=</code></td></tr>
+<tr><td>Cookies</td><td><code>consentimiento</code>, <code>idioma</code></td><td><code>consentimiento</code>, <code>idioma</code> y <code>sesion</code> (de la API, httpOnly)</td></tr>
+<tr><td>Simular fallas</td><td><code>X-Simular-Latencia</code>, <code>X-Simular-Error</code></td><td>Las mismas</td></tr>
+<tr><td>Sesión</td><td>Sprints 2 y 3</td><td>Ya está en la API: <code>POST/GET/DELETE /sesion</code>, registro, verificación, recuperación</td></tr>
+</table></div>
+<h3>Qué revisar en el repo de tu compañero antes de sustentar</h3>
+<ol>
+<li><code>package.json</code>: versión de Next.js, scripts, librerías extra.</li>
+<li>Carpeta <code>app</code>: qué rutas tiene y cuáles son de servidor o de cliente.</li>
+<li>Su cliente de API: cómo maneja errores, si tiene caché y reintentos.</li>
+<li>Cómo hizo idioma y cookies (¿contexto?, ¿lee cookies en el servidor?).</li>
+<li>Cómo guarda los filtros de Explorar en la URL y si los valida.</li>
+<li>Cómo formatea fechas y precios.</li>
+<li>Su historia de Git, sus PR, su <code>IA.md</code> y su URL de Vercel.</li>
+</ol>
+<label class="marcar"><input type="checkbox" data-marca="s-taquilla"> Ya lo estudié</label>
+</section>
+
+<section id="s-preguntas" data-titulo="Preguntas de sustentación">
+<h2><span class="num">8.3</span> Preguntas de sustentación</h2>
+<p>Intenta responder en voz alta antes de abrir la respuesta.</p>
+
+<h3>Arquitectura</h3>
+<details class="pregunta"><summary>¿Por qué Next.js y no React solo (o Vite, como el repo de referencia)?</summary><div class="resp"><p>Porque el curso pedía Next.js con App Router y TypeScript. Además da lo que el sprint necesita: pedir datos en el servidor, leer cookies antes de pintar (sin parpadeo), rutas por carpetas, estados de carga, error y 404 con archivos especiales, metadatos y despliegue directo en Vercel.</p></div></details>
+<details class="pregunta"><summary>¿Qué diferencia hay entre un Server Component y un Client Component? Da un ejemplo de cada uno en el proyecto.</summary><div class="resp"><p>El de servidor se ejecuta solo en el servidor, puede hacer <code>await</code> a la API y no envía su código al navegador: <code>mundos/[id]/page.tsx</code>. El de cliente lleva <code>"use client"</code>, se hidrata en el navegador y puede usar estado y eventos: <code>MenuMovil.tsx</code>.</p></div></details>
+<details class="pregunta"><summary>¿Por qué las peticiones a la API las hace el servidor y no el navegador?</summary><div class="resp"><p>La dirección está en <code>API_URL</code>, que solo existe en el servidor; se aprovecha la caché de Next.js para todos los visitantes; el HTML llega completo (mejor para buscadores y para la primera carga); y no hay problemas de CORS.</p></div></details>
+<details class="pregunta"><summary>¿Qué es <code>Promise.all</code> y por qué se usa?</summary><div class="resp"><p>Lanza varias promesas al tiempo y espera a que terminen todas. En el catálogo, mundo, mundos y rarezas viajan en paralelo: el tiempo total es el de la más lenta y no la suma de las tres.</p></div></details>
+<details class="pregunta"><summary>¿Qué hace <code>revalidate: 60</code>?</summary><div class="resp"><p>Guarda la respuesta del fetch en caché y la reutiliza 60 segundos. Después, la siguiente visita recibe la copia guardada mientras se pide una nueva por detrás; si la nueva falla, se sigue usando la anterior. Los textos usan 300 s.</p></div></details>
+
+<h3>Datos y API</h3>
+<details class="pregunta"><summary>¿Qué pasa si escribo <code>/mundos/neon?rareza=inventada</code>?</summary><div class="resp"><p><code>leerFiltros</code> compara el valor con las rarezas de <code>GET /rarezas</code>; como no existe, lo ignora y se muestran todos los cromos. Sin esa validación la API respondería 422 y se vería el estado de error.</p></div></details>
+<details class="pregunta"><summary>¿Y si escribo <code>/mundos/no-existe</code>?</summary><div class="resp"><p><code>GET /mundos/no-existe</code> responde 404; <code>mundoONoEncontrado</code> lo detecta (<code>ErrorApi</code> con estado 404) y llama <code>notFound()</code>, que muestra <code>not-found.tsx</code>. El código HTTP sale 200 por el streaming de <code>loading.tsx</code>, pero la página es la de no encontrado y lleva <code>noindex</code>.</p></div></details>
+<details class="pregunta"><summary>¿Por qué los filtros van en la URL y no en <code>useState</code>?</summary><div class="resp"><p>Para que sobrevivan a una recarga, se puedan compartir por enlace, funcione el botón «Atrás» y el servidor pinte la página ya filtrada.</p></div></details>
+<details class="pregunta"><summary>¿Por qué <code>edicion=album</code> en todas las peticiones de cromos?</summary><div class="resp"><p>Porque la API también tiene cromos especiales, y el catálogo del álbum solo muestra los de la edición álbum (lo indica el contrato).</p></div></details>
+<details class="pregunta"><summary>¿Qué pasa si la API está caída?</summary><div class="resp"><p>Cada petición se reintenta dos veces (0,3 s y 0,9 s) si el error es 5xx o de red. Si sigue fallando: si la página tenía datos en caché, se sirven; si no, en una vista se muestra <code>error.tsx</code> con «Reintentar»; si falla el layout (textos), se muestra <code>global-error.tsx</code> con un respaldo bilingüe. Si solo falla <code>/idiomas</code>, el selector se arma con los textos.</p></div></details>
+<details class="pregunta"><summary>¿Por qué no se reintenta un 404?</summary><div class="resp"><p>Porque es un error de quien pide: el recurso no existe y no va a aparecer por repetir. Reintentar solo haría la respuesta más lenta.</p></div></details>
+<details class="pregunta"><summary>¿Cómo muestras el estado de carga y de error en la demo?</summary><div class="resp"><p>En <code>.env.local</code> pongo <code>API_SIMULAR_LATENCIA=2000</code> o <code>API_SIMULAR_ERROR=503</code> y reinicio <code>npm run dev</code>. El cliente de la API los envía como las cabeceras <code>X-Simular-Latencia</code> y <code>X-Simular-Error</code>.</p></div></details>
+
+<h3>Idioma y cookies</h3>
+<details class="pregunta"><summary>¿Dónde están los textos de la interfaz? ¿Hay alguno escrito en el código?</summary><div class="resp"><p>Todos vienen de <code>GET /textos</code>. La única excepción es el respaldo de <code>global-error.tsx</code>, porque se muestra justo cuando la API no responde y no hay de dónde sacar textos.</p></div></details>
+<details class="pregunta"><summary>Explica paso a paso qué pasa al hacer clic en «EN».</summary><div class="resp"><p><code>cambiarIdioma("en")</code> → <code>useTransition</code> marca la carga → la Server Action <code>cargarTextos("en")</code> pide los textos → el contexto cambia <code>textos</code> e <code>idioma</code> → todos los <code>t()</code> se repintan → un efecto cambia <code>&lt;html lang&gt;</code> y otro el título → si aceptó cookies, se guarda <code>idioma=en</code>.</p></div></details>
+<details class="pregunta"><summary>¿Por qué las cookies se leen en el servidor?</summary><div class="resp"><p>Para que el HTML llegue ya correcto: en el idioma recordado y sin el aviso si ya decidió. Si se leyeran en el navegador, se vería el aviso o el idioma equivocado por un instante (parpadeo).</p></div></details>
+<details class="pregunta"><summary>Si rechazo las cookies, ¿por qué sí se guarda la cookie <code>consentimiento</code>?</summary><div class="resp"><p>Porque es necesaria para recordar la propia decisión; si no, el aviso aparecería en cada página. Lo que no se guarda es la preferencia (<code>idioma</code>), y si existía, se borra.</p></div></details>
+<details class="pregunta"><summary>¿Qué significan <code>Max-Age</code>, <code>SameSite=Lax</code> y <code>Secure</code>?</summary><div class="resp"><p><code>Max-Age</code>: cuántos segundos dura (180 días). <code>SameSite=Lax</code>: no se envía en peticiones de otros sitios salvo al navegar con un enlace, lo que protege de ataques entre sitios. <code>Secure</code>: solo viaja por HTTPS (se agrega cuando el sitio está en HTTPS).</p></div></details>
+<details class="pregunta"><summary>¿Por qué «Aceptar» y «Rechazar» se ven iguales si en Figma no?</summary><div class="resp"><p>El segundo criterio de S1-06 pide que ninguna opción tenga más peso. Por eso las dos usan la variante secundaria y el mismo ancho. Está documentado como decisión propia en IA.md.</p></div></details>
+<details class="pregunta"><summary>¿Cómo funcionan los plurales?</summary><div class="resp"><p>Algunos textos vienen como <code>{ uno, otro }</code>. <code>traducir</code> elige <code>uno</code> si <code>valores.cantidad === 1</code> y <code>otro</code> en los demás casos, y luego rellena los marcadores como <code>{cantidad}</code>.</p></div></details>
+
+<h3>Diseño y accesibilidad</h3>
+<details class="pregunta"><summary>¿Qué es un token de diseño? Muéstrame uno.</summary><div class="resp"><p>Una decisión de diseño guardada como variable: <code>--marca-primario: #6c3bff</code> o <code>--tipo-cuerpo-m: 400 16px / 24px var(--fuente-rubik)</code> en <code>tokens.css</code>. Los componentes usan <code>var(--...)</code> en vez de valores escritos a mano.</p></div></details>
+<details class="pregunta"><summary>¿Cómo toman color los iconos?</summary><div class="resp"><p>El SVG se usa como máscara de un <code>span</code> cuyo fondo es <code>currentColor</code>. Así el icono toma el color del texto que lo rodea y se puede cambiar con CSS.</p></div></details>
+<details class="pregunta"><summary>¿Cómo se usa el menú móvil solo con teclado?</summary><div class="resp"><p><kbd>Tab</kbd> hasta el botón, <kbd>Enter</kbd> abre y enfoca el primer enlace. <kbd>Tab</kbd> da la vuelta dentro del menú y el botón. <kbd>Escape</kbd> cierra y devuelve el foco al botón. El botón anuncia su estado con <code>aria-expanded</code>.</p></div></details>
+<details class="pregunta"><summary>¿Para qué sirve <code>aria-current</code>? ¿Y <code>aria-pressed</code>?</summary><div class="resp"><p><code>aria-current="page"</code> anuncia el enlace de la página actual (o <code>"true"</code> para el filtro activo). <code>aria-pressed</code> anuncia si un botón conmutable está activo (ES/EN).</p></div></details>
+<details class="pregunta"><summary>¿Por qué la rareza muestra icono y palabra y no solo color?</summary><div class="resp"><p>Para no depender del color: una persona con daltonismo o un lector de pantalla no distinguirían «épica» de «rara» solo por el color.</p></div></details>
+<details class="pregunta"><summary>¿Qué pasa con las animaciones si la persona pidió reducir el movimiento?</summary><div class="resp"><p>Hay una media query <code>prefers-reduced-motion: reduce</code> en <code>globals.css</code> que las quita o reduce.</p></div></details>
+
+<h3>Herramientas</h3>
+<details class="pregunta"><summary>¿Cómo organizaste el trabajo en Git?</summary><div class="resp"><p>Una rama y un PR por historia, con commits convencionales (<code>feat:</code>, <code>fix:</code>, <code>chore:</code>, <code>docs:</code>). Las ramas eran encadenadas porque cada historia dependía de la anterior; eso causó que los PR #4 a #8 no llegaran a <code>main</code>, y se corrigió con el PR #9 de integración.</p></div></details>
+<details class="pregunta"><summary>¿Qué pasa si hago push a <code>main</code>?</summary><div class="resp"><p>Vercel lo detecta, compila y publica una nueva versión de producción automáticamente.</p></div></details>
+<details class="pregunta"><summary>¿Dónde está la dirección de la API en producción?</summary><div class="resp"><p>En la variable de entorno <code>API_URL</code>, configurada en Vercel (Settings → Environment Variables). En local, en <code>.env.local</code>, que no se sube a Git.</p></div></details>
+<details class="pregunta"><summary>¿Qué revisa <code>npm run typecheck</code>?</summary><div class="resp"><p>Genera los tipos de rutas de Next.js (<code>next typegen</code>) y revisa todo el proyecto con TypeScript estricto sin generar archivos (<code>tsc --noEmit</code>).</p></div></details>
+<details class="pregunta"><summary>¿Qué es UptimeRobot y qué estás monitoreando?</summary><div class="resp"><p>Un servicio que visita la URL desplegada cada 5 minutos y avisa por correo si no responde. Monitorea <code>https://cromoverso-sperezz33.vercel.app</code>.</p></div></details>
+<details class="pregunta"><summary>Dame un ejemplo de algo que la IA hizo mal y cómo lo corregiste.</summary><div class="resp"><p>Afirmó que GitHub cambiaría solo la base de los PR encadenados a <code>main</code>. Revisando la historia de <code>main</code> vi que solo estaba S1-01; lo corregí con el PR #9 y desde entonces reviso la rama destino antes de fusionar. Otro: la primera versión de los estilos tenía tamaños de letra a mano, y se corrigió con tokens <code>--tipo-*</code>.</p></div></details>
+
+<h3>Preguntas de «modifica esto en vivo»</h3>
+<details class="pregunta"><summary>Cambia el color principal de la marca.</summary><div class="resp"><p>En <code>src/styles/tokens.css</code>, cambiar <code>--marca-primario</code>. Todo lo que lo usa cambia de una vez.</p></div></details>
+<details class="pregunta"><summary>Haz que el catálogo muestre 4 columnas en web en vez de 5.</summary><div class="resp"><p>En <code>src/components/vistas/VistaCatalogo.module.css</code>, la regla de la rejilla: <code>grid-template-columns: repeat(4, 1fr)</code> (y revisar las media queries de abajo).</p></div></details>
+<details class="pregunta"><summary>Agrega un enlace nuevo a la navegación.</summary><div class="resp"><p>Agregar la ruta en <code>src/lib/rutas.ts</code> y un elemento en <code>enlacesPrincipales</code> con su <code>clave</code>, <code>href</code> e <code>icono</code>. El texto debe existir en la API como <code>navbar.enlaces.&lt;clave&gt;</code> y <code>menuMovil.enlaces.&lt;clave&gt;</code>; si no existe, <code>t()</code> muestra la ruta del texto, lo que delata el faltante.</p></div></details>
+<details class="pregunta"><summary>Cambia cuánto dura la caché del catálogo.</summary><div class="resp"><p>En <code>src/lib/api.ts</code>, la constante <code>CACHE_CATALOGO</code>.</p></div></details>
+<details class="pregunta"><summary>Muestra 6 cromos destacados en vez de 3.</summary><div class="resp"><p>En <code>src/app/page.tsx</code>, función <code>cromosDestacados</code>: <code>.slice(0, 6)</code>. Habría que revisar que el abanico de la portada se vea bien con más cartas.</p></div></details>
+<label class="marcar"><input type="checkbox" data-marca="s-preguntas"> Ya lo estudié</label>
+</section>
+
+<section id="s-demo" data-titulo="Guion de la demo">
+<h2><span class="num">8.4</span> Guion de la demo (5 minutos)</h2>
+<ol class="flujo">
+<li><strong>Inicio en web</strong> (40 s): portada, leyenda de rarezas, 6 mundos. «Todo viene de <code>GET /mundos</code> y <code>GET /rarezas</code>».</li>
+<li><strong>Inicio en móvil</strong> (30 s): DevTools a 390 px, carrusel de mundos, menú hamburguesa.</li>
+<li><strong>Catálogo</strong> (60 s): entrar a un mundo, filtrar por rareza y tipo, mostrar la URL, <strong>recargar</strong> (los filtros siguen), estado vacío y «Quitar filtros». En móvil, los selects.</li>
+<li><strong>Idioma</strong> (40 s): cambiar a EN, mostrar <code>&lt;html lang="en"&gt;</code> en DevTools y el título de la pestaña.</li>
+<li><strong>Cookies</strong> (60 s): en incógnito, aviso; rechazar → EN → recargar → vuelve ES. Aceptar → EN → recargar → sigue EN. Mostrar las cookies en DevTools → Application.</li>
+<li><strong>Teclado</strong> (40 s): «Saltar al contenido», foco visible, menú móvil con Tab y Escape.</li>
+<li><strong>Cierre</strong> (30 s): repositorio y PR en GitHub, y UptimeRobot en «Up».</li>
+</ol>
+<div class="caja ojo"><span class="chip">Antes de empezar</span>
+<p>Abre la URL de producción unos minutos antes para despertar la API de Fly.io. Ten listas las pestañas: sitio, sitio en incógnito, GitHub (PR), UptimeRobot, y el editor con <code>layout.tsx</code>, <code>api.ts</code> y <code>tokens.css</code>.</p></div>
+<label class="marcar"><input type="checkbox" data-marca="s-demo"> Ya lo estudié</label>
+</section>
+
+<div class="parte">Parte 9 · Herramientas</div>
+
+<section id="s-emmet" data-titulo="Guía de Emmet">
+<h2><span class="num">9.1</span> Guía de Emmet</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p><strong>Emmet</strong> es un atajo de escritura que viene incluido en VS Code: escribes una abreviatura y al presionar <kbd>Tab</kbd> (o <kbd>Enter</kbd> en la sugerencia) se expande a HTML o CSS completo. Funciona en archivos <code>.html</code> y <code>.css</code>, y también en <code>.jsx</code>/<code>.tsx</code>, donde genera <code>className</code> en vez de <code>class</code>.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es como las abreviaturas de los mensajes de texto que el celular completa solo: escribes <code>ul&gt;li*3</code> y aparece la lista entera.</p></div>
+<h3>Operadores básicos</h3>
+<div class="tabla"><table>
+<tr><th>Escribes</th><th>Significa</th><th>Resultado</th></tr>
+<tr><td><code>!</code></td><td>Plantilla HTML5</td><td><code>&lt;!DOCTYPE html&gt;&lt;html lang="en"&gt;&lt;head&gt;…&lt;/head&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;</code></td></tr>
+<tr><td><code>div</code></td><td>Etiqueta</td><td><code>&lt;div&gt;&lt;/div&gt;</code></td></tr>
+<tr><td><code>.tarjeta</code></td><td>Clase (sin etiqueta = <code>div</code>)</td><td><code>&lt;div class="tarjeta"&gt;&lt;/div&gt;</code></td></tr>
+<tr><td><code>#contenido</code></td><td>Id</td><td><code>&lt;div id="contenido"&gt;&lt;/div&gt;</code></td></tr>
+<tr><td><code>main#contenido.contenedor</code></td><td>Etiqueta + id + clase</td><td><code>&lt;main id="contenido" class="contenedor"&gt;&lt;/main&gt;</code></td></tr>
+<tr><td><code>nav&gt;ul</code></td><td><code>&gt;</code> hijo</td><td><code>&lt;nav&gt;&lt;ul&gt;&lt;/ul&gt;&lt;/nav&gt;</code></td></tr>
+<tr><td><code>h1+p</code></td><td><code>+</code> hermano</td><td><code>&lt;h1&gt;&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;</code></td></tr>
+<tr><td><code>div&gt;p^h2</code></td><td><code>^</code> sube un nivel</td><td><code>&lt;div&gt;&lt;p&gt;&lt;/p&gt;&lt;/div&gt;&lt;h2&gt;&lt;/h2&gt;</code></td></tr>
+<tr><td><code>li*3</code></td><td><code>*</code> repetir</td><td>Tres <code>&lt;li&gt;</code></td></tr>
+<tr><td><code>li.item$*3</code></td><td><code>$</code> número</td><td><code>item1</code>, <code>item2</code>, <code>item3</code></td></tr>
+<tr><td><code>li.item$$$*3</code></td><td>Número con ceros</td><td><code>item001</code>…</td></tr>
+<tr><td><code>a{Inicio}</code></td><td><code>{}</code> texto</td><td><code>&lt;a href=""&gt;Inicio&lt;/a&gt;</code></td></tr>
+<tr><td><code>a[href=/mundos]</code></td><td><code>[]</code> atributos</td><td><code>&lt;a href="/mundos"&gt;&lt;/a&gt;</code></td></tr>
+<tr><td><code>button[type=button aria-expanded=false]</code></td><td>Varios atributos</td><td><code>&lt;button type="button" aria-expanded="false"&gt;&lt;/button&gt;</code></td></tr>
+<tr><td><code>(header&gt;nav)+main+footer</code></td><td><code>()</code> agrupar</td><td>Header con nav, luego main y footer como hermanos</td></tr>
+<tr><td><code>p&gt;lorem10</code></td><td>Texto de relleno de 10 palabras</td><td><code>&lt;p&gt;Lorem ipsum dolor…&lt;/p&gt;</code></td></tr>
+<tr><td><code>img</code>, <code>input:email</code>, <code>link:css</code>, <code>a:link</code></td><td>Atajos con atributos</td><td><code>&lt;img src="" alt=""&gt;</code>, <code>&lt;input type="email" …&gt;</code>…</td></tr>
+</table></div>
+<h3>Ejemplos con la estructura de Cromoverso</h3>
+<pre><code><span class="c">// Esqueleto de página</span>
+a.salto[href=#contenido]{Saltar al contenido}+header&gt;nav&gt;ul&gt;li*2&gt;a^^^main#contenido+footer
+
+<span class="c">// Menú con dos enlaces (en un .tsx genera className)</span>
+nav&gt;ul.enlaces&gt;li*2&gt;a.enlace[href=/]{Enlace $}
+
+<span class="c">// Rejilla de 5 tarjetas de cromo</span>
+ul.rejilla&gt;li*5&gt;article.cromo&gt;span.numero{00$}+h3.nombre+p.rareza
+
+<span class="c">// Panel de filtros</span>
+aside.columna&gt;section.panel*3&gt;h2.tituloPanel+ul&gt;li*4&gt;a
+
+<span class="c">// Aviso de cookies</span>
+section.aviso&gt;h2.titulo+p.texto+div.acciones&gt;button[type=button]*2</code></pre>
+<h3>Emmet en CSS</h3>
+<div class="tabla"><table>
+<tr><th>Escribes</th><th>Resultado</th></tr>
+<tr><td><code>m10</code> / <code>p10</code></td><td><code>margin: 10px;</code> / <code>padding: 10px;</code></td></tr>
+<tr><td><code>mt8</code>, <code>pb4</code></td><td><code>margin-top: 8px;</code>, <code>padding-bottom: 4px;</code></td></tr>
+<tr><td><code>w100p</code></td><td><code>width: 100%;</code></td></tr>
+<tr><td><code>df</code> / <code>dg</code> / <code>dn</code></td><td><code>display: flex;</code> / <code>display: grid;</code> / <code>display: none;</code></td></tr>
+<tr><td><code>jcc</code>, <code>jcsb</code></td><td><code>justify-content: center;</code>, <code>justify-content: space-between;</code></td></tr>
+<tr><td><code>aic</code></td><td><code>align-items: center;</code></td></tr>
+<tr><td><code>fdc</code></td><td><code>flex-direction: column;</code></td></tr>
+<tr><td><code>posr</code>, <code>posa</code>, <code>poss</code></td><td><code>position: relative/absolute/sticky;</code></td></tr>
+<tr><td><code>tac</code></td><td><code>text-align: center;</code></td></tr>
+<tr><td><code>bgc</code>, <code>c</code></td><td><code>background-color: ;</code>, <code>color: ;</code></td></tr>
+<tr><td><code>bdrs8</code></td><td><code>border-radius: 8px;</code></td></tr>
+</table></div>
+<p>En este proyecto, después de expandir en CSS, reemplaza los números por tokens: <code>padding: var(--espacio-3)</code>, no <code>padding: 12px</code>.</p>
+<h3>Comandos útiles de VS Code con Emmet</h3>
+<ul>
+<li><strong>Envolver con abreviatura</strong>: selecciona texto, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → «Emmet: Wrap with Abbreviation» → escribe <code>li*</code>: cada línea queda envuelta en un <code>&lt;li&gt;</code>.</li>
+<li><strong>Quitar etiqueta</strong>: «Emmet: Remove Tag».</li>
+<li><strong>Ir al par de la etiqueta</strong>: «Emmet: Go to Matching Pair».</li>
+<li><strong>Expandir selección</strong>: «Emmet: Balance (outward)».</li>
+<li>Si no expande en un <code>.tsx</code>: en Settings busca <code>emmet.includeLanguages</code> y agrega <code>"typescriptreact": "html"</code>, o revisa que <code>emmet.showExpandedAbbreviation</code> no esté en <code>never</code>.</li>
+</ul>
+<label class="marcar"><input type="checkbox" data-marca="s-emmet"> Ya lo estudié</label>
+</section>
+
+<section id="s-gitbash" data-titulo="Git Bash: comandos">
+<h2><span class="num">9.2</span> Git Bash: comandos</h2>
+<div class="caja concepto"><span class="chip">Concepto</span>
+<p><strong>Git Bash</strong> es una terminal para Windows que trae Git y comandos de Linux (<code>ls</code>, <code>touch</code>, <code>mkdir</code>). En la terminal escribes un comando y presionas <kbd>Enter</kbd>. Usa <code>/</code> en las rutas, y las rutas con espacios van entre comillas.</p></div>
+<div class="caja analogia"><span class="chip">Analogía</span>
+<p>Es manejar tu computador por texto en vez de con el mouse: en vez de abrir carpetas con doble clic, escribes «entra a esta carpeta», «crea este archivo».</p></div>
+<h3>Moverse y ver</h3>
+<pre><code>pwd                          <span class="c"># ¿en qué carpeta estoy?</span>
+ls                           <span class="c"># qué hay aquí</span>
+ls -la                       <span class="c"># incluye ocultos (.git, .env.local) y detalles</span>
+cd src/app                   <span class="c"># entrar a una carpeta</span>
+cd ..                        <span class="c"># subir un nivel</span>
+cd ~                         <span class="c"># ir a tu carpeta de usuario</span>
+cd "/c/Users/Asus Vivobook/Desktop/general-project"   <span class="c"># ruta con espacios: entre comillas</span>
+clear                        <span class="c"># limpiar la pantalla (o Ctrl+L)</span></code></pre>
+<h3>Crear, ver, copiar, mover y borrar</h3>
+<pre><code>mkdir componentes                    <span class="c"># crear carpeta</span>
+mkdir -p src/components/eventos      <span class="c"># crear con todas las carpetas intermedias</span>
+touch Boton.tsx                      <span class="c"># crear archivo vacío</span>
+touch Boton.tsx Boton.module.css     <span class="c"># crear varios</span>
+echo "API_URL=https://..." &gt; .env.local   <span class="c"># crear/sobrescribir con contenido</span>
+echo "OTRA=1" &gt;&gt; .env.local                <span class="c"># agregar al final</span>
+cat .env.example                     <span class="c"># ver el contenido</span>
+cp .env.example .env.local           <span class="c"># copiar</span>
+cp -r carpeta copia                  <span class="c"># copiar carpeta</span>
+mv viejo.tsx nuevo.tsx               <span class="c"># renombrar o mover</span>
+rm archivo.txt                       <span class="c"># borrar archivo (no va a la papelera)</span>
+rm -r carpeta                        <span class="c"># borrar carpeta con todo (¡cuidado!)</span>
+code .                               <span class="c"># abrir la carpeta actual en VS Code</span></code></pre>
+<div class="caja ojo"><span class="chip">Cuidado</span>
+<p><code>rm</code> no tiene papelera. Antes de borrar, revisa con <code>ls</code> qué hay. Nunca uses <code>rm -rf</code> sobre una ruta de la que no estés seguro.</p></div>
+<h3>Configuración inicial (una sola vez)</h3>
+<pre><code>git config --global user.name "Tu Nombre"
+git config --global user.email "tu@correo.com"
+git config --global init.defaultBranch main
+git config --list                    <span class="c"># ver la configuración</span></code></pre>
+<h3>Empezar</h3>
+<pre><code>git init                                           <span class="c"># convertir la carpeta en repositorio</span>
+git clone https://github.com/Sperezz33/Cromoverso.git   <span class="c"># descargar un repositorio</span>
+cd Cromoverso
+npm install                                        <span class="c"># instalar dependencias</span>
+cp .env.example .env.local
+npm run dev</code></pre>
+<h3>El ciclo diario</h3>
+<pre><code>git status                           <span class="c"># qué cambió y qué está preparado</span>
+git diff                             <span class="c"># ver los cambios línea por línea</span>
+git add src/lib/api.ts               <span class="c"># preparar un archivo</span>
+git add .                            <span class="c"># preparar todo lo cambiado</span>
+git commit -m "feat: agregar cliente de la API"
+git log --oneline                    <span class="c"># historia resumida</span>
+git log --oneline --graph --all      <span class="c"># historia con ramas dibujadas</span>
+git show c530b5a                     <span class="c"># ver qué cambió en un commit</span></code></pre>
+<h3>Ramas</h3>
+<pre><code>git branch                           <span class="c"># listar ramas locales (* = la actual)</span>
+git branch -a                        <span class="c"># incluye las remotas</span>
+git switch -c feat/s1-04-catalogo    <span class="c"># crear una rama y pasarse a ella</span>
+git checkout -b feat/s1-04-catalogo  <span class="c"># lo mismo, forma antigua</span>
+git switch main                      <span class="c"># cambiar a una rama existente</span>
+git checkout main                    <span class="c"># lo mismo, forma antigua</span>
+git switch -                         <span class="c"># volver a la rama anterior</span>
+git branch -m nombre-nuevo           <span class="c"># renombrar la rama actual</span>
+git branch -d feat/vieja             <span class="c"># borrar una rama ya fusionada</span>
+git merge feat/s1-04-catalogo        <span class="c"># traer esa rama a la rama actual</span></code></pre>
+<h3>Trabajar con GitHub</h3>
+<pre><code>git remote -v                                  <span class="c"># ver a dónde apunta origin</span>
+git remote set-url origin https://github.com/Sperezz33/Cromoverso.git   <span class="c"># cambiarlo (se hizo al renombrar)</span>
+git push -u origin feat/s1-04-catalogo         <span class="c"># subir una rama nueva (-u: recordar el destino)</span>
+git push                                       <span class="c"># subir los commits nuevos de la rama</span>
+git pull                                       <span class="c"># bajar y fusionar lo nuevo</span>
+git fetch                                      <span class="c"># solo bajar, sin fusionar</span>
+git push origin --delete feat/vieja            <span class="c"># borrar una rama en GitHub</span></code></pre>
+<h3>Pull requests con <code>gh</code> (GitHub CLI)</h3>
+<pre><code>gh auth login                                  <span class="c"># iniciar sesión una vez</span>
+gh pr create --base main --title "feat: ..." --body "..."   <span class="c"># crear PR (revisa --base)</span>
+gh pr list                                     <span class="c"># PR abiertos</span>
+gh pr view 9                                   <span class="c"># ver un PR</span>
+gh pr checkout 9                               <span class="c"># bajar la rama de un PR</span>
+gh repo view --web                             <span class="c"># abrir el repo en el navegador</span></code></pre>
+<h3>Flujo completo de una historia</h3>
+<pre><code>git switch main
+git pull
+git switch -c feat/s1-07-algo
+<span class="c"># ... editar archivos ...</span>
+npm run lint &amp;&amp; npm run typecheck &amp;&amp; npm run format:check
+git add .
+git commit -m "feat: describir el cambio"
+git push -u origin feat/s1-07-algo
+gh pr create --base main --title "US-CRO-S1-07: algo" --body "Qué hace y cómo probarlo"
+<span class="c"># revisar en GitHub que diga base: main, fusionar, y luego:</span>
+git switch main
+git pull
+git branch -d feat/s1-07-algo</code></pre>
+<h3>Deshacer cosas</h3>
+<div class="tabla"><table>
+<tr><th>Situación</th><th>Comando</th></tr>
+<tr><td>Descartar cambios no guardados de un archivo</td><td><code>git restore archivo.tsx</code></td></tr>
+<tr><td>Sacar un archivo del staging (sin perder cambios)</td><td><code>git restore --staged archivo.tsx</code></td></tr>
+<tr><td>Corregir el mensaje del último commit (no subido)</td><td><code>git commit --amend -m "nuevo mensaje"</code></td></tr>
+<tr><td>Agregar algo olvidado al último commit (no subido)</td><td><code>git add archivo &amp;&amp; git commit --amend --no-edit</code></td></tr>
+<tr><td>Deshacer el último commit pero conservar los cambios</td><td><code>git reset --soft HEAD~1</code></td></tr>
+<tr><td>Deshacer un commit ya subido (crea un commit inverso)</td><td><code>git revert c530b5a</code></td></tr>
+<tr><td>Guardar cambios a medias para cambiar de rama</td><td><code>git stash</code> y luego <code>git stash pop</code></td></tr>
+<tr><td>Ver qué rama y commit tienes</td><td><code>git status</code>, <code>git log -1</code></td></tr>
+</table></div>
+<div class="caja ojo"><span class="chip">Reglas de seguridad</span>
+<p>No uses <code>--amend</code>, <code>reset</code> ni <code>push --force</code> sobre commits que ya están en GitHub y en <code>main</code>: reescriben la historia que otros (y Vercel) ya tienen. Para deshacer algo publicado, usa <code>git revert</code>.</p></div>
+<h3>Conflictos de fusión</h3>
+<p>Si dos ramas cambiaron las mismas líneas, Git marca el archivo así:</p>
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+const CACHE_CATALOGO = 60;
+=======
+const CACHE_CATALOGO = 120;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feat/otra-rama</code></pre>
+<p>Dejas la versión correcta, borras las marcas, y haces <code>git add archivo</code> y <code>git commit</code>. VS Code muestra botones «Accept Current / Incoming / Both» para hacerlo más fácil.</p>
+<h3>npm</h3>
+<pre><code>npm install                 <span class="c"># instalar lo que dice package.json</span>
+npm install paquete         <span class="c"># agregar una dependencia</span>
+npm install -D paquete      <span class="c"># agregar una dependencia de desarrollo</span>
+npm run dev | build | start | lint | format | typecheck
+<span class="c"># Ctrl+C detiene el servidor de desarrollo</span></code></pre>
+<label class="marcar"><input type="checkbox" data-marca="s-gitbash"> Ya lo estudié</label>
+</section>
+
+<section id="s-glosario" data-titulo="Glosario">
+<h2><span class="num">9.3</span> Glosario</h2>
+<div class="tabla"><table>
+<tr><th>Término</th><th>Definición corta</th></tr>
+<tr><td>API</td><td>Puerta para que un programa pida datos a otro</td></tr>
+<tr><td>App Router</td><td>Sistema de rutas de Next.js basado en carpetas dentro de <code>app</code></td></tr>
+<tr><td>ARIA</td><td>Atributos que dan información extra a lectores de pantalla</td></tr>
+<tr><td>Breakpoint</td><td>Ancho de pantalla donde cambia el diseño</td></tr>
+<tr><td>Caché</td><td>Copia guardada de una respuesta para reutilizarla</td></tr>
+<tr><td>Client Component</td><td>Componente con <code>"use client"</code> que se hidrata en el navegador</td></tr>
+<tr><td>Commit</td><td>Foto guardada de los cambios del proyecto</td></tr>
+<tr><td>Context</td><td>Mecanismo de React para compartir datos sin pasarlos por props</td></tr>
+<tr><td>Contrato</td><td>Documento que define cómo se usa la API</td></tr>
+<tr><td>Cookie</td><td>Dato pequeño que el navegador guarda y envía al sitio en cada petición</td></tr>
+<tr><td>CORS</td><td>Regla del navegador que limita pedir datos a otro dominio</td></tr>
+<tr><td>CSS Module</td><td>Archivo <code>.module.css</code> cuyas clases solo valen en su componente</td></tr>
+<tr><td>Design token</td><td>Decisión de diseño guardada como variable</td></tr>
+<tr><td>Endpoint</td><td>Combinación método + ruta de una API</td></tr>
+<tr><td>Hidratación</td><td>Cuando React conecta en el navegador el HTML que vino del servidor</td></tr>
+<tr><td>Hook</td><td>Función <code>use...</code> que da estado o efectos a un componente</td></tr>
+<tr><td>i18n</td><td>Internacionalización: soportar varios idiomas</td></tr>
+<tr><td>JSON</td><td>Formato de texto para datos</td></tr>
+<tr><td>JSX</td><td>Sintaxis tipo HTML dentro de JavaScript</td></tr>
+<tr><td>Linter</td><td>Herramienta que revisa el código (ESLint)</td></tr>
+<tr><td>Merge</td><td>Fusionar una rama en otra</td></tr>
+<tr><td>Props</td><td>Datos que recibe un componente</td></tr>
+<tr><td>Pull request</td><td>Solicitud en GitHub para fusionar una rama</td></tr>
+<tr><td>Rama</td><td>Línea de trabajo paralela en Git</td></tr>
+<tr><td>Revalidate</td><td>Cada cuántos segundos se renueva un dato en caché</td></tr>
+<tr><td>searchParams</td><td>Parámetros de la URL después de <code>?</code></td></tr>
+<tr><td>Server Action</td><td>Función de servidor que se llama desde el cliente</td></tr>
+<tr><td>Server Component</td><td>Componente que solo se ejecuta en el servidor</td></tr>
+<tr><td>Slug</td><td>Identificador legible en la URL (<code>noche-de-salsa-brava</code>)</td></tr>
+<tr><td>Streaming</td><td>Enviar la página por partes mientras se generan</td></tr>
+<tr><td>TypeScript</td><td>JavaScript con tipos</td></tr>
+<tr><td>Variable de entorno</td><td>Configuración que vive fuera del código</td></tr>
+</table></div>
+<label class="marcar"><input type="checkbox" data-marca="s-glosario"> Ya lo estudié</label>
+</section>
+
+</main>
+</div>
+
+<script>
+(function () {
+  var CLAVE = "guia-cromoverso-estudiadas";
+  var hechas = {};
+  try { hechas = JSON.parse(localStorage.getItem(CLAVE) || "{}") || {}; } catch (e) { hechas = {}; }
+  function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(hechas)); } catch (e) {} }
+
+  var main = document.querySelector("main");
+  var nodos = main.querySelectorAll(".parte, section[id]");
+  var nav = document.getElementById("nav-indice");
+  var navMovil = document.getElementById("nav-movil");
+  var enlaces = {};
+  var lista = null, listaMovil = null, total = 0;
+
+  nodos.forEach(function (nodo) {
+    if (nodo.classList.contains("parte")) {
+      var h = document.createElement("h4"); h.textContent = nodo.textContent; nav.appendChild(h);
+      var h2 = document.createElement("h4"); h2.textContent = nodo.textContent; navMovil.appendChild(h2);
+      lista = document.createElement("ol"); nav.appendChild(lista);
+      listaMovil = document.createElement("div"); navMovil.appendChild(listaMovil);
+      return;
+    }
+    total++;
+    var titulo = nodo.getAttribute("data-titulo");
+    var a = document.createElement("a"); a.href = "#" + nodo.id; a.textContent = titulo;
+    var li = document.createElement("li"); li.appendChild(a); lista.appendChild(li);
+    var b = document.createElement("a"); b.href = "#" + nodo.id; b.textContent = titulo;
+    b.addEventListener("click", function () { document.querySelector(".indice-movil").open = false; });
+    listaMovil.appendChild(b);
+    enlaces[nodo.id] = a;
+  });
+
+  var progreso = document.getElementById("progreso");
+  var barra = progreso.querySelector(".barra span");
+  function pintar() {
+    var n = 0;
+    Object.keys(enlaces).forEach(function (id) {
+      var si = !!hechas[id]; if (si) n++;
+      enlaces[id].classList.toggle("hecho", si);
+    });
+    progreso.firstChild.textContent = n + " de " + total + " secciones estudiadas";
+    barra.style.width = (total ? (n / total) * 100 : 0) + "%";
+  }
+  document.querySelectorAll("input[data-marca]").forEach(function (c) {
+    var id = c.getAttribute("data-marca");
+    c.id = "marca-" + id;
+    c.checked = !!hechas[id];
+    c.addEventListener("change", function () { hechas[id] = c.checked; if (!c.checked) delete hechas[id]; guardar(); pintar(); });
+  });
+  pintar();
+
+  var buscar = document.getElementById("buscar");
+  buscar.addEventListener("input", function () {
+    var q = buscar.value.trim().toLowerCase();
+    nav.querySelectorAll("li").forEach(function (li) {
+      li.classList.toggle("oculto", q !== "" && li.textContent.toLowerCase().indexOf(q) === -1);
+    });
+  });
+
+  if ("IntersectionObserver" in window) {
+    var obs = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (e.isIntersecting) {
+          Object.keys(enlaces).forEach(function (id) { enlaces[id].classList.remove("activo"); });
+          var a = enlaces[e.target.id]; if (a) a.classList.add("activo");
+        }
+      });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    main.querySelectorAll("section[id]").forEach(function (s) { obs.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>
